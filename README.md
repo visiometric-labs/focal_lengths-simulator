@@ -1,6 +1,8 @@
-# Focal Lengths Simulator by Visiometric Labs 📐👓
+# Optix — Focal Lengths Simulator by Visiometric Labs 📐👓
 
-Simulador clínico y pedagógico interactivo de **Diseños de Lente Oftálmica según Campos Visuales y Distancias Focales** (Monofocales, Bifocales, Progresivos y Ocupacionales).
+> **Interactive clinical and pedagogical simulator for ophthalmic lens designs: Single Vision, Bifocals, and Progressive (Multifocal) lenses across multiple focal planes.**
+
+Simulador clínico y pedagógico interactivo de **Diseños de Lente Oftálmica según Campos Visuales y Distancias Focales** (Monofocales, Bifocales y Progresivos).
 
 ---
 
