@@ -299,7 +299,8 @@
 }
 
 /* Pie de la Portada */
-.landing-footer-credits {
+.landing-footer-credits,
+.entry-copyright {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -308,6 +309,7 @@
   color: var(--text-tertiary);
   border-top: 1px solid rgba(56, 189, 248, 0.1);
   padding-top: 16px;
+  text-align: center;
 }
 
 .footer-separator {
