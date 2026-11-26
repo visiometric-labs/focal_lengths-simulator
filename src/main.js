@@ -2,6 +2,7 @@ import { WebGLRenderer } from './engine/webgl-renderer.js';
 import { CameraController } from './core/camera-controller.js';
 import { eventBus } from './core/event-bus.js';
 import { idleManager } from './core/idle-manager.js';
+import { getAssetUrl } from './core/asset-helper.js';
 import { Preloader } from './components/preloader.js';
 import { LandingScreen } from './components/landing-screen.js';
 import { GlassesHUD } from './components/glasses-hud.js';
@@ -26,6 +27,7 @@ class App {
     this.pitchModal = null;
 
     this.isExperienceActive = false;
+    this.isPreloadFinished = false;
 
     this.init();
   }
@@ -40,33 +42,61 @@ class App {
     this.landing = new LandingScreen(landingContainer);
 
     // 3. Inicializar Motor WebGL
-    const canvas = document.getElementById('sim-canvas');
-    this.renderer = new WebGLRenderer(canvas);
+    try {
+      const canvas = document.getElementById('sim-canvas');
+      this.renderer = new WebGLRenderer(canvas);
+    } catch (e) {
+      console.warn('Optix: No se pudo inicializar WebGLRenderer:', e);
+    }
 
     // 4. Inicializar Controlador Cinemático de Mirada
-    this.camera = new CameraController();
-    const viewport = document.getElementById('sim-viewport');
-    this.camera.attachElement(viewport);
+    try {
+      this.camera = new CameraController();
+      const viewport = document.getElementById('sim-viewport');
+      this.camera.attachElement(viewport);
+    } catch (e) {
+      console.warn('Optix: Error en CameraController:', e);
+    }
 
     // 5. Inicializar Montura Oftálmica en Primera Persona
-    const glassesContainer = document.getElementById('glasses-container');
-    this.glasses = new GlassesHUD(glassesContainer);
+    try {
+      const glassesContainer = document.getElementById('glasses-container');
+      this.glasses = new GlassesHUD(glassesContainer);
+    } catch (e) {
+      console.warn('Optix: Error en GlassesHUD:', e);
+    }
 
     // 6. Inicializar Cabecera HUD
-    const hudContainer = document.getElementById('hud-header');
-    this.hudHeader = new HudHeader(hudContainer);
+    try {
+      const hudContainer = document.getElementById('hud-header');
+      this.hudHeader = new HudHeader(hudContainer);
+    } catch (e) {
+      console.warn('Optix: Error en HudHeader:', e);
+    }
 
     // 7. Inicializar Selector de Lentes y Gamas
-    const lensContainer = document.getElementById('lens-selector-container');
-    this.lensSelector = new LensSelector(lensContainer);
+    try {
+      const lensContainer = document.getElementById('lens-selector-container');
+      this.lensSelector = new LensSelector(lensContainer);
+    } catch (e) {
+      console.warn('Optix: Error en LensSelector:', e);
+    }
 
     // 8. Inicializar Ficha de Experiencia del Paciente
-    const cardContainer = document.getElementById('experience-card-container');
-    this.experienceCard = new ExperienceCard(cardContainer);
+    try {
+      const cardContainer = document.getElementById('experience-card-container');
+      this.experienceCard = new ExperienceCard(cardContainer);
+    } catch (e) {
+      console.warn('Optix: Error en ExperienceCard:', e);
+    }
 
     // 9. Inicializar Modal de Guía Clínica de Mostrador
-    const modalContainer = document.getElementById('pitch-modal-container');
-    this.pitchModal = new PitchModal(modalContainer);
+    try {
+      const modalContainer = document.getElementById('pitch-modal-container');
+      this.pitchModal = new PitchModal(modalContainer);
+    } catch (e) {
+      console.warn('Optix: Error en PitchModal:', e);
+    }
 
     // 10. Vincular Eventos Globales
     this.bindEvents();
@@ -74,39 +104,59 @@ class App {
     // 11. Bucle de Sincronización de Cámara y Renderizado (60-120 FPS)
     this.startCameraSyncLoop();
 
-    // 12. Precargar Activos Fotónicos en la GPU
+    // 12. Precargar Activos Fotónicos en la GPU con seguro de timeout
     await this.preloadAssets();
   }
 
+  finishPreload() {
+    if (this.isPreloadFinished) return;
+    this.isPreloadFinished = true;
+
+    if (this.preloader) {
+      this.preloader.complete();
+    }
+    if (this.landing) {
+      this.landing.show();
+    }
+  }
+
   async preloadAssets() {
+    // Seguro de tiempo máximo: si por lentitud de red o hardware tarda más de 2 segundos,
+    // mostrar sí o sí la portada para garantizar interacción inmediata.
+    const safetyTimer = setTimeout(() => {
+      this.finishPreload();
+    }, 2200);
+
     try {
-      this.preloader.updateStatus('Cargando placa fotográfica 2K...');
-      const baseUrl = import.meta.env.BASE_URL || './';
-      const sceneUrl = `${baseUrl}scenes/office-master.jpg`.replace(/\/\//g, '/');
-      const depthUrl = `${baseUrl}scenes/office-depth.png`.replace(/\/\//g, '/');
+      if (this.preloader) {
+        this.preloader.updateStatus('Cargando placa fotográfica 2K...');
+      }
 
-      await this.renderer.loadTexture(sceneUrl, false);
+      const sceneUrl = getAssetUrl('scenes/office-master.jpg');
+      const depthUrl = getAssetUrl('scenes/office-depth.png');
 
-      this.preloader.updateStatus('Compilando mapa de profundidad y shaders CoC...');
-      await this.renderer.loadTexture(depthUrl, true);
+      if (this.renderer) {
+        await this.renderer.loadTexture(sceneUrl, false);
+        if (this.preloader) {
+          this.preloader.updateStatus('Compilando mapa de profundidad y shaders CoC...');
+        }
+        await this.renderer.loadTexture(depthUrl, true);
+        this.renderer.render();
+      }
 
-      // Renderizar un primer cuadro en buffer de fondo para precalentar la GPU
-      this.renderer.render();
+      clearTimeout(safetyTimer);
+      if (this.preloader) {
+        this.preloader.updateStatus('Motor preparado.');
+      }
 
-      this.preloader.updateStatus('Motor preparado.');
       setTimeout(() => {
-        this.preloader.complete();
-        this.landing.show();
-      }, 400);
+        this.finishPreload();
+      }, 350);
 
     } catch (err) {
-      console.error('Error precargando activos de Optix:', err);
-      this.preloader.updateStatus('Error al cargar texturas. Reintentando...');
-      // En caso de fallo de red puntual, permitir continuar
-      setTimeout(() => {
-        this.preloader.complete();
-        this.landing.show();
-      }, 1000);
+      console.warn('Optix: Error precargando texturas:', err);
+      clearTimeout(safetyTimer);
+      this.finishPreload();
     }
   }
 
@@ -114,7 +164,9 @@ class App {
     // Evento: Usuario pulsa "Iniciar Experiencia"
     eventBus.on('experience-started', () => {
       this.isExperienceActive = true;
-      this.renderer.start();
+      if (this.renderer) {
+        this.renderer.start();
+      }
       idleManager.start();
 
       // Desvanecer la píldora de guía gestual tras 4.5 segundos
@@ -130,31 +182,45 @@ class App {
     eventBus.on('idle-timeout', () => {
       this.isExperienceActive = false;
       idleManager.stop();
-      this.camera.reset();
-      this.pitchModal.close();
-      this.landing.show();
+      if (this.camera) {
+        this.camera.reset();
+      }
+      if (this.pitchModal) {
+        this.pitchModal.close();
+      }
+      if (this.landing) {
+        this.landing.show();
+      }
     });
 
     // Evento: Cambio de Lente o Submodo
     eventBus.on('lens-changed', (info) => {
-      this.renderer.setLens(info.typeIndex, info.subModeIndex);
+      if (this.renderer) {
+        this.renderer.setLens(info.typeIndex, info.subModeIndex);
+      }
     });
 
     // Evento: Toggle de Modo Rayos X / Mapa del Lente
     eventBus.on('overlay-toggled', (isActive) => {
-      this.renderer.setOverlay(isActive);
+      if (this.renderer) {
+        this.renderer.setOverlay(isActive);
+      }
     });
 
     // Evento: Centrar Mirada
     eventBus.on('recenter-camera', () => {
-      this.camera.reset();
+      if (this.camera) {
+        this.camera.reset();
+      }
     });
   }
 
   startCameraSyncLoop() {
     const loop = () => {
-      this.camera.update();
-      this.renderer.setCamera(this.camera.yaw, this.camera.pitch);
+      if (this.camera && this.renderer) {
+        this.camera.update();
+        this.renderer.setCamera(this.camera.yaw, this.camera.pitch);
+      }
       requestAnimationFrame(loop);
     };
     loop();

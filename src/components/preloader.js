@@ -2,12 +2,13 @@ import { eventBus } from '../core/event-bus.js';
 
 /**
  * Preloader Dinámico Circular para Optix™
- * Inspirado en el concepto visual de arco fotónico azul con flecha direccional y estela de partículas decrecientes
+ * Rotación geométrica matemáticamente pura sin saltos ni bamboleos
  */
 export class Preloader {
   constructor(containerElement) {
     this.container = containerElement;
     this.element = null;
+    this.isDone = false;
     this.render();
   }
 
@@ -15,39 +16,44 @@ export class Preloader {
     this.element = document.createElement('div');
     this.element.className = 'preloader-card';
 
+    // SVG 100x100 perfectamente centrado en cx=50, cy=50, radio R=37
+    // El arco y las partículas tienen simetría radial exacta
     this.element.innerHTML = `
       <div class="preloader-content">
-        <!-- Spinner Fotónico Circular Dinámico -->
         <div class="spinner-wrapper">
           <svg class="photonic-circular-spinner" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
             <defs>
-              <linearGradient id="spinner-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <linearGradient id="spinner-blue-grad" x1="0%" y1="0%" x2="100%" y2="100%">
                 <stop offset="0%" stop-color="#00F2FE" />
                 <stop offset="60%" stop-color="#007BFF" />
                 <stop offset="100%" stop-color="#0284C7" />
               </linearGradient>
             </defs>
 
-            <!-- Arco Circular de Rotación -->
-            <path d="M 50 10 
-                     A 40 40 0 1 0 85 65" 
-                  stroke="url(#spinner-grad)" 
-                  stroke-width="7.5" 
-                  stroke-linecap="round" />
+            <!-- Grupo rotador con centro exacto en 50, 50 -->
+            <g class="spinner-rotator">
+              <!-- Arco circular sólido (de 110° a 330° en sentido horario) -->
+              <path d="M 37.3 84.8
+                       A 37 37 0 1 1 82.0 37.3"
+                    stroke="url(#spinner-blue-grad)"
+                    stroke-width="7.5"
+                    stroke-linecap="round" />
 
-            <!-- Flecha de Dirección en la Cabeza del Arco -->
-            <polygon points="50,2 62,12 48,18" fill="#00F2FE" />
+              <!-- Cabeza de Flecha directriz perfectamente alineada con la tangente en (82, 37.3) -->
+              <polygon points="76,28 92,34 83,48" fill="#007BFF" />
 
-            <!-- Estela de Partículas / Puntos Decrecientes en Opacidad y Tamaño -->
-            <circle cx="88" cy="50" r="5.0" fill="#00F2FE" opacity="0.90" />
-            <circle cx="85" cy="36" r="4.2" fill="#007BFF" opacity="0.75" />
-            <circle cx="78" cy="24" r="3.6" fill="#38BDF8" opacity="0.60" />
-            <circle cx="68" cy="16" r="3.0" fill="#38BDF8" opacity="0.45" />
-            <circle cx="58" cy="11" r="2.4" fill="#38BDF8" opacity="0.30" />
+              <!-- Estela de 7 partículas con reducción continua de radio y opacidad -->
+              <!-- Ángulos entre 350° y 90° -->
+              <circle cx="86.4" cy="50.0" r="4.8" fill="#00F2FE" opacity="0.88" />
+              <circle cx="84.2" cy="62.7" r="4.3" fill="#007BFF" opacity="0.75" />
+              <circle cx="77.9" cy="74.4" r="3.8" fill="#007BFF" opacity="0.62" />
+              <circle cx="68.5" cy="83.6" r="3.3" fill="#38BDF8" opacity="0.48" />
+              <circle cx="56.7" cy="89.1" r="2.8" fill="#38BDF8" opacity="0.36" />
+              <circle cx="43.8" cy="90.5" r="2.3" fill="#38BDF8" opacity="0.25" />
+            </g>
           </svg>
         </div>
 
-        <!-- Leyenda Clínica -->
         <div class="preloader-text-group">
           <h2 class="preloader-title">Optix<span class="brand-accent">™</span></h2>
           <p id="preloader-status" class="preloader-status">Calibrando motor óptico y texturas focales...</p>
@@ -59,19 +65,25 @@ export class Preloader {
   }
 
   updateStatus(message) {
-    const statusEl = this.element.querySelector('#preloader-status');
+    const statusEl = this.element?.querySelector('#preloader-status');
     if (statusEl) statusEl.textContent = message;
   }
 
   complete() {
-    this.updateStatus('Simulador preparado.');
-    this.element.classList.add('fade-out');
+    if (this.isDone) return;
+    this.isDone = true;
 
-    setTimeout(() => {
-      if (this.element && this.element.parentElement) {
-        this.element.parentElement.removeChild(this.element);
-      }
-      eventBus.emit('preloader-completed');
-    }, 450);
+    this.updateStatus('Simulador preparado.');
+
+    // Desvanecer el overlay completo con suavidad (solo opacidad, sin deformación de escala)
+    if (this.container) {
+      this.container.classList.add('fade-out');
+
+      setTimeout(() => {
+        this.container.classList.add('hidden');
+        this.container.style.display = 'none';
+        eventBus.emit('preloader-completed');
+      }, 380);
+    }
   }
 }
