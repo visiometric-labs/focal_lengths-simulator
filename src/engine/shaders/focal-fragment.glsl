@@ -16,11 +16,11 @@ uniform float u_subMode;            // Monofocal (0: Lejos, 1: Cerca) | Progresi
 uniform float u_overlayActive;      // 0.0: Apagado, 1.0: Modo Rayos X activo
 uniform float u_aspect;             // Ancho / Alto
 
-// Pastilla Flat-Top 28 anatómica: D-Shape con borde superior plano y esquinas inferiores redondeadas
+// Pastilla Flat-Top anatómica amplia: D-Shape con borde superior plano y esquinas inferiores redondeadas
 bool isInsideFlatTop(vec2 uv, float cx) {
-  float segTop = 0.40;
-  float segBottom = 0.12;
-  float halfWidth = 0.13;
+  float segTop = 0.43;
+  float segBottom = 0.06;
+  float halfWidth = 0.19; // Pastilla amplia para lectura cómoda
   
   if (uv.y > segTop || uv.y < segBottom) return false;
   
@@ -28,7 +28,7 @@ bool isInsideFlatTop(vec2 uv, float cx) {
   if (dx > halfWidth) return false;
   
   // Esquinas inferiores redondeadas características del Flat-Top de laboratorio
-  float roundR = 0.06;
+  float roundR = 0.08;
   if (uv.y < segBottom + roundR) {
     float dy = (segBottom + roundR) - uv.y;
     float cornerX = halfWidth - roundR;
@@ -79,10 +79,10 @@ void main() {
     // -----------------------------------------------------------------
     // CASO B: BIFOCAL FLAT-TOP 28 (Pastillas anatómicas D-Shape en cada ojo)
     // -----------------------------------------------------------------
-    // Segmento D-Shape izquierdo (cx ≈ 0.33) y derecho (cx ≈ 0.67)
+    // Segmento D-Shape amplio izquierdo (cx ≈ 0.32) y derecho (cx ≈ 0.68)
     // Confinadas estrictamente al cristal (inGlasses > 0.5) para que NUNCA sobresalgan del marco
-    bool inLeftSeg = isInsideFlatTop(localUV, 0.33);
-    bool inRightSeg = isInsideFlatTop(localUV, 0.67);
+    bool inLeftSeg = isInsideFlatTop(localUV, 0.32);
+    bool inRightSeg = isInsideFlatTop(localUV, 0.68);
     bool insideSegment = (inLeftSeg || inRightSeg) && (inGlasses > 0.5);
 
     if (insideSegment) {
