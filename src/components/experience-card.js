@@ -9,7 +9,7 @@ export class ExperienceCard {
   constructor(containerElement) {
     this.container = containerElement;
     this.element = null;
-    this.isCollapsed = false;
+    this.isCollapsed = true; // Iniciar minimizada por defecto a petición clínica
     this.currentData = null;
 
     this.render();
@@ -18,13 +18,13 @@ export class ExperienceCard {
 
   render() {
     this.element = document.createElement('div');
-    this.element.className = 'experience-card-inner';
+    this.element.className = 'experience-card-inner collapsed';
 
     this.element.innerHTML = `
       <div class="card-header-row">
         <div class="card-title-group">
-          <span id="exp-badge" class="exp-badge">Gradación Continua</span>
-          <h3 id="exp-title" class="exp-title">Lente Progresivo — Gama Media</h3>
+          <span id="exp-badge" class="exp-badge">Foco Fijo</span>
+          <h3 id="exp-title" class="exp-title">Lente Monofocal — Visión Lejana</h3>
         </div>
         <button id="btn-collapse-card" class="btn-card-toggle" type="button" title="Minimizar / Expandir Ficha">
           <svg class="chevron-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round">
@@ -35,18 +35,18 @@ export class ExperienceCard {
 
       <div id="exp-body" class="card-body-content">
         <p id="exp-explanation" class="exp-text">
-          Transición dióptrica suave e invisible de arriba hacia abajo que cubre lejos, intermedio y cerca sin líneas divisorias.
+          Máxima agudeza visual nítida en el plano infinito (>3 metros). Al mirar objetos cercanos como celular o documentos, el ojo no puede acomodar y experimenta desenfoque.
         </p>
 
         <div class="exp-meta-grid">
           <div class="meta-item">
             <span class="meta-label">Confort Ergonómico:</span>
-            <span id="exp-ergonomics" class="meta-value">Permite leer textos y hojas de cálculo con menor rotación de cuello.</span>
+            <span id="exp-ergonomics" class="meta-value">Excelente postura para conducir y ver televisión; requiere gafas adicionales para leer.</span>
           </div>
 
           <div id="meta-blindspot-box" class="meta-item warning-box">
             <span class="meta-label">Campo y Limitación:</span>
-            <span id="exp-blindspot" class="meta-value">Moderada y suavizada en zonas laterales.</span>
+            <span id="exp-blindspot" class="meta-value">Zona cercana completamente borrosa (presbicia no corregida en lectura).</span>
           </div>
         </div>
       </div>

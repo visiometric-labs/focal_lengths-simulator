@@ -54,9 +54,11 @@ export class CameraController {
     this.lastPointerX = e.clientX;
     this.lastPointerY = e.clientY;
 
-    // Arrastrar la pantalla: invertir para sensación natural de mover la vista
-    this.targetYaw -= dx * this.sensitivity;
-    this.targetPitch += dy * this.sensitivity;
+    // Arrastrar la pantalla: movimiento directo natural en 1ª persona (POV)
+    // Deslizar a la derecha (dx > 0) -> girar cabeza/ojos a la derecha (+yaw)
+    // Deslizar hacia abajo (dy > 0) -> inclinar cabeza/ojos hacia abajo (-pitch, escritorio/celular)
+    this.targetYaw += dx * this.sensitivity;
+    this.targetPitch -= dy * this.sensitivity;
 
     // Restringir a los límites anatómicos
     this.targetYaw = Math.max(-this.maxYaw, Math.min(this.maxYaw, this.targetYaw));

@@ -3,13 +3,26 @@ const path = require('path');
 const sharp = require('../../filters-simulator/node_modules/sharp');
 
 const outDir = path.resolve(__dirname, '../public/scenes');
+const realOfficeSrc = path.resolve(__dirname, '../../filters-simulator/public/scenes/office-real.jpg');
+const masterJpgPath = path.join(outDir, 'office-master.jpg');
 const depthPngPath = path.join(outDir, 'office-depth.png');
 
-async function generateDepthMap() {
-  const width = 1024;
-  const height = 571;
+async function generateMasterAndDepth() {
+  const width = 2752;
+  const height = 1536;
 
-  // Creamos un mapa de profundidad fotográfico con SVG de gradientes y formas suaves:
+  console.log('1. Generando placa fotográfica 2.7K ultranítida office-master.jpg...');
+  await sharp(realOfficeSrc)
+    .resize(width, height)
+    .linear(1.18, -12) // Mayor contraste y negros profundos
+    .modulate({ brightness: 0.98, saturation: 1.08 })
+    .sharpen({ sigma: 1.3, m1: 1.2, m2: 2.5 }) // Textos del monitor y celular hipernítidos
+    .jpeg({ quality: 96, chromaSubsampling: '4:4:4' })
+    .toFile(masterJpgPath);
+  console.log('office-master.jpg generado con éxito en:', masterJpgPath);
+
+  console.log('2. Generando mapa de profundidad 2.7K calibrado office-depth.png...');
+  // Mapa de profundidad fotográfico con gradientes continuos y desenfoque gausiano:
   // Fondo lejano (>3m): valor 242-255 (blanco / gris muy claro)
   // Escritorio / Laptop intermedia (~70cm): valor 128 (gris medio)
   // Celular y mano en primer plano (~35cm): valor 38 (gris oscuro / casi negro)
@@ -39,7 +52,7 @@ async function generateDepthMap() {
       </radialGradient>
 
       <filter id="soft-blur" x="-10%" y="-10%" width="120%" height="120%">
-        <feGaussianBlur stdDeviation="8" />
+        <feGaussianBlur stdDeviation="24" />
       </filter>
     </defs>
 
@@ -49,25 +62,23 @@ async function generateDepthMap() {
     <!-- 2. Plano medio: Escritorio, Laptop y taza de café (Profundidad z ≈ 0.48 - 0.55) -->
     <g filter="url(#soft-blur)">
       <!-- Superficie de la mesa -->
-      <path d="M 120 280 L 1024 240 L 1024 571 L 180 571 Z" fill="#8C8C8C" opacity="0.85" />
+      <path d="M 322 753 L 2752 645 L 2752 1536 L 484 1536 Z" fill="#8C8C8C" opacity="0.85" />
       <!-- Silueta amplia de laptop y área de trabajo central -->
-      <ellipse cx="580" cy="330" rx="280" ry="180" fill="url(#laptop-depth)" />
+      <ellipse cx="1558" cy="887" rx="752" ry="484" fill="url(#laptop-depth)" />
     </g>
 
     <!-- 3. Primer plano: Brazo, mano y Smartphone (Profundidad z ≈ 0.12 - 0.20) -->
     <g filter="url(#soft-blur)">
       <!-- Antebrazo y mano que entra desde la esquina inferior izquierda -->
-      <path d="M 0 320 
-               C 100 320, 240 340, 290 410 
-               C 340 470, 320 540, 240 571 
-               L 0 571 Z" 
+      <path d="M 0 860 
+               C 268 860, 645 914, 779 1102 
+               C 913 1264, 860 1452, 645 1536 
+               L 0 1536 Z" 
             fill="url(#phone-depth)" />
       <!-- Foco preciso en el cuerpo del smartphone -->
-      <ellipse cx="170" cy="450" rx="140" ry="110" fill="#242424" opacity="0.95" />
+      <ellipse cx="456" cy="1210" rx="376" ry="295" fill="#242424" opacity="0.95" />
     </g>
   </svg>`;
-
-  console.log('Generating calibrated 8-bit grayscale depth map for office scene...');
 
   await sharp(Buffer.from(depthSvg))
     .resize(width, height)
@@ -75,7 +86,7 @@ async function generateDepthMap() {
     .png({ quality: 100, compressionLevel: 9 })
     .toFile(depthPngPath);
 
-  console.log('Depth map generated successfully at:', depthPngPath);
+  console.log('office-depth.png generado con éxito en:', depthPngPath);
 }
 
-generateDepthMap().catch(console.error);
+generateMasterAndDepth().catch(console.error);

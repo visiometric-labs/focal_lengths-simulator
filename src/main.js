@@ -9,7 +9,6 @@ import { GlassesHUD } from './components/glasses-hud.js';
 import { HudHeader } from './components/hud-header.js';
 import { LensSelector } from './components/lens-selector.js';
 import { ExperienceCard } from './components/experience-card.js';
-import { PitchModal } from './components/pitch-modal.js';
 
 /**
  * Orquestador Maestro de la Aplicación Optix™
@@ -24,7 +23,6 @@ class App {
     this.hudHeader = null;
     this.lensSelector = null;
     this.experienceCard = null;
-    this.pitchModal = null;
 
     this.isExperienceActive = false;
     this.isPreloadFinished = false;
@@ -90,21 +88,13 @@ class App {
       console.warn('Optix: Error en ExperienceCard:', e);
     }
 
-    // 9. Inicializar Modal de Guía Clínica de Mostrador
-    try {
-      const modalContainer = document.getElementById('pitch-modal-container');
-      this.pitchModal = new PitchModal(modalContainer);
-    } catch (e) {
-      console.warn('Optix: Error en PitchModal:', e);
-    }
-
-    // 10. Vincular Eventos Globales
+    // 9. Vincular Eventos Globales
     this.bindEvents();
 
-    // 11. Bucle de Sincronización de Cámara y Renderizado (60-120 FPS)
+    // 10. Bucle de Sincronización de Cámara y Renderizado (60-120 FPS)
     this.startCameraSyncLoop();
 
-    // 12. Precargar Activos Fotónicos en la GPU con seguro de timeout
+    // 11. Precargar Activos Fotónicos en la GPU con seguro de timeout
     await this.preloadAssets();
   }
 
@@ -178,6 +168,28 @@ class App {
       }
     });
 
+    // Evento: Clic en Logo de la Cabecera -> Regresar a Portada
+    eventBus.on('return-to-landing', () => {
+      this.isExperienceActive = false;
+      idleManager.stop();
+      if (this.camera) {
+        this.camera.reset();
+      }
+      if (this.renderer) {
+        this.renderer.stop();
+      }
+      if (document.fullscreenElement || document.webkitFullscreenElement) {
+        if (document.exitFullscreen) {
+          document.exitFullscreen().catch(() => {});
+        } else if (document.webkitExitFullscreen) {
+          document.webkitExitFullscreen();
+        }
+      }
+      if (this.landing) {
+        this.landing.show();
+      }
+    });
+
     // Evento: Inactividad alcanzada (Modo Mostrador / Kiosk)
     eventBus.on('idle-timeout', () => {
       this.isExperienceActive = false;
@@ -185,8 +197,8 @@ class App {
       if (this.camera) {
         this.camera.reset();
       }
-      if (this.pitchModal) {
-        this.pitchModal.close();
+      if (this.renderer) {
+        this.renderer.stop();
       }
       if (this.landing) {
         this.landing.show();

@@ -10,9 +10,9 @@ export class LensSelector {
     this.container = containerElement;
     this.element = null;
 
-    // Estado activo por defecto: Progresivo Gama Media
-    this.activeLens = 'progresivo';
-    this.activeSubMode = 'media'; // Para monofocal: 'lejos' o 'cerca'. Para progresivo: 'baja', 'media', 'media-alta', 'alta'
+    // Estado activo por defecto: Monofocal Lejos (Petición Clínica)
+    this.activeLens = 'monofocal';
+    this.activeSubMode = 'lejos'; // Para monofocal: 'lejos' o 'cerca'. Para progresivo: 'baja', 'media', 'media-alta', 'alta'
 
     this.render();
     this.bindEvents();
@@ -26,8 +26,8 @@ export class LensSelector {
     this.element.innerHTML = `
       <!-- 1. Pestañas Principales (Diseño Oftálmico) -->
       <div class="lens-primary-tabs" role="tablist">
-        <!-- Monofocal -->
-        <button class="lens-tab-btn" data-lens="monofocal" type="button" role="tab">
+        <!-- Monofocal (Activo por defecto) -->
+        <button class="lens-tab-btn active" data-lens="monofocal" type="button" role="tab">
           <svg class="tab-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
             <circle cx="12" cy="12" r="9"/>
             <circle cx="12" cy="12" r="2.5" fill="currentColor"/>
@@ -46,7 +46,7 @@ export class LensSelector {
         </button>
 
         <!-- Progresivo Multifocal -->
-        <button class="lens-tab-btn active" data-lens="progresivo" type="button" role="tab">
+        <button class="lens-tab-btn" data-lens="progresivo" type="button" role="tab">
           <svg class="tab-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
             <path d="M 6 4 C 11 5, 11 11, 12 12 C 13 11, 13 5, 18 4"/>
             <path d="M 6 20 C 11 19, 11 13, 12 12 C 13 13, 13 19, 18 20"/>

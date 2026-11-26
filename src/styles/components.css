@@ -25,6 +25,16 @@
   border-radius: var(--radius-full);
   backdrop-filter: var(--glass-blur);
   -webkit-backdrop-filter: var(--glass-blur);
+  cursor: pointer;
+  user-select: none;
+  transition: all var(--transition-fast);
+}
+
+.hud-brand-logo:hover {
+  background: var(--bg-dark-hover);
+  border-color: var(--cyan-subtle);
+  transform: translateY(-1px);
+  box-shadow: 0 0 12px rgba(0, 242, 254, 0.25);
 }
 
 .hud-brand-text {

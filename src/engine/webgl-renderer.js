@@ -14,13 +14,18 @@ export class WebGLRenderer {
     // Texturas
     this.sceneTexture = null;
     this.depthTexture = null;
+    this.maskTexture = null;
     this.isSceneLoaded = false;
     this.isDepthLoaded = false;
 
-    // Estado Uniforms
+    // Canvas fuera de pantalla para generar la máscara exacta de apertura del marco SVG
+    this.maskCanvas = null;
+    this.maskCtx = null;
+
+    // Estado Uniforms: experiencia inicia en Monofocal Lejos (petición clínica)
     this.camera = { yaw: 0.0, pitch: 0.0 };
-    this.lensType = 2.0;       // Progresivo por defecto
-    this.subMode = 1.0;        // Gama Media por defecto
+    this.lensType = 0.0;       // 0: Monofocal por defecto
+    this.subMode = 0.0;        // 0: Visión Lejana por defecto
     this.overlayActive = 0.0;  // Rayos X apagado por defecto
 
     this.dpr = Math.min(window.devicePixelRatio || 1, 2.0);
@@ -99,6 +104,7 @@ export class WebGLRenderer {
       position: gl.getAttribLocation(prog, 'a_position'),
       sceneTex: gl.getUniformLocation(prog, 'u_sceneTex'),
       depthTex: gl.getUniformLocation(prog, 'u_depthTex'),
+      maskTex: gl.getUniformLocation(prog, 'u_maskTex'),
       resolution: gl.getUniformLocation(prog, 'u_resolution'),
       camera: gl.getUniformLocation(prog, 'u_camera'),
       lensType: gl.getUniformLocation(prog, 'u_lensType'),
@@ -150,6 +156,69 @@ export class WebGLRenderer {
     this.canvas.height = Math.round(height * this.dpr);
 
     this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
+
+    // Regenerar la textura de máscara de apertura para que coincida exactamente con el marco SVG
+    this.updateMaskTexture();
+  }
+
+  /**
+   * Genera dinámicamente en GPU la máscara de apertura binocular
+   * Calibrada al bisel exacto del SVG (100% de coherencia visual sin brechas de desenfoque)
+   */
+  updateMaskTexture() {
+    const gl = this.gl;
+    if (!gl) return;
+
+    if (!this.maskCanvas) {
+      this.maskCanvas = document.createElement('canvas');
+      this.maskCtx = this.maskCanvas.getContext('2d');
+    }
+
+    const aspect = this.canvas.width / this.canvas.height;
+    const maskW = 1024;
+    const maskH = Math.max(320, Math.round(1024 / aspect));
+
+    this.maskCanvas.width = maskW;
+    this.maskCanvas.height = maskH;
+
+    const ctx = this.maskCtx;
+    ctx.fillStyle = '#000000';
+    ctx.fillRect(0, 0, maskW, maskH);
+
+    // Reproducción exacta de preserveAspectRatio="xMidYMid slice" para viewBox="0 0 1920 1080"
+    const scale = Math.max(maskW / 1920, maskH / 1080);
+    const ox = (maskW - 1920 * scale) / 2;
+    const oy = (maskH - 1080 * scale) / 2;
+
+    const tx = (x) => ox + x * scale;
+    const ty = (y) => oy + y * scale;
+
+    ctx.fillStyle = '#FFFFFF';
+    ctx.beginPath();
+    // Apertura binocular que llega 100% al bisel interno de las gafas
+    ctx.moveTo(tx(128), ty(118));
+    ctx.bezierCurveTo(tx(605), ty(83), tx(1315), ty(83), tx(1792), ty(118));
+    ctx.bezierCurveTo(tx(1868), ty(480), tx(1858), ty(775), tx(1752), ty(942));
+    ctx.bezierCurveTo(tx(1415), ty(1010), tx(1148), ty(1000), tx(1022), ty(922));
+    ctx.bezierCurveTo(tx(992), ty(882), tx(960), ty(868), tx(928), ty(882));
+    ctx.bezierCurveTo(tx(898), ty(922), tx(772), ty(1000), tx(505), ty(1010));
+    ctx.bezierCurveTo(tx(285), ty(1010), tx(195), ty(972), tx(168), ty(942));
+    ctx.bezierCurveTo(tx(60), ty(775), tx(50), ty(480), tx(128), ty(118));
+    ctx.closePath();
+    ctx.fill();
+
+    if (!this.maskTexture) {
+      this.maskTexture = gl.createTexture();
+    }
+    gl.bindTexture(gl.TEXTURE_2D, this.maskTexture);
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this.maskCanvas);
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
+
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
   }
 
   /**
@@ -228,7 +297,14 @@ export class WebGLRenderer {
     gl.bindTexture(gl.TEXTURE_2D, this.depthTexture);
     gl.uniform1i(this.locations.depthTex, 1);
 
-    // 3. Subir Uniforms de Resolución y Pantalla
+    // 3. Activar Textura 2: Máscara de Apertura Binocular (Bisel de Montura)
+    if (this.maskTexture) {
+      gl.activeTexture(gl.TEXTURE2);
+      gl.bindTexture(gl.TEXTURE_2D, this.maskTexture);
+      gl.uniform1i(this.locations.maskTex, 2);
+    }
+
+    // 4. Subir Uniforms de Resolución y Pantalla
     gl.uniform2f(this.locations.resolution, this.canvas.width, this.canvas.height);
     gl.uniform1f(this.locations.aspect, this.canvas.width / this.canvas.height);
 

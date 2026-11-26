@@ -8,32 +8,13 @@ varying vec2 v_uv;
 
 uniform sampler2D u_sceneTex;
 uniform sampler2D u_depthTex;
+uniform sampler2D u_maskTex;        // Máscara de apertura binocular exacta del marco SVG
 uniform vec2 u_resolution;
-uniform vec2 u_camera;         // (yaw, pitch) normalizados
-uniform float u_lensType;       // 0: Monofocal, 1: Bifocal, 2: Progresivo
-uniform float u_subMode;        // Monofocal (0: Lejos, 1: Cerca) | Progresivo (0: Baja, 1: Media, 2: Med-Alta, 3: Alta)
-uniform float u_overlayActive;  // 0.0: Apagado, 1.0: Modo Rayos X activo
-uniform float u_aspect;         // Ancho / Alto
-
-// Máscara binocular analítica: determina si el píxel está dentro de las lentes o en la periferia
-float getGlassesMask(vec2 p) {
-  vec2 uv = (p - 0.5) * vec2(u_aspect, 1.0);
-  
-  // Lente izquierdo
-  vec2 leftP = uv - vec2(-0.35, -0.02);
-  leftP.y *= 1.18;
-  float dLeft = length(max(abs(leftP) - vec2(0.25, 0.22), 0.0));
-
-  // Lente derecho
-  vec2 rightP = uv - vec2(0.35, -0.02);
-  rightP.y *= 1.18;
-  float dRight = length(max(abs(rightP) - vec2(0.25, 0.22), 0.0));
-
-  float insideLeft = 1.0 - smoothstep(0.08, 0.14, dLeft);
-  float insideRight = 1.0 - smoothstep(0.08, 0.14, dRight);
-
-  return clamp(insideLeft + insideRight, 0.0, 1.0);
-}
+uniform vec2 u_camera;             // (yaw, pitch) normalizados
+uniform float u_lensType;           // 0: Monofocal, 1: Bifocal, 2: Progresivo
+uniform float u_subMode;            // Monofocal (0: Lejos, 1: Cerca) | Progresivo (0: Baja, 1: Media, 2: Med-Alta, 3: Alta)
+uniform float u_overlayActive;      // 0.0: Apagado, 1.0: Modo Rayos X activo
+uniform float u_aspect;             // Ancho / Alto
 
 void main() {
   // 1. Mapeo de coordenadas con paneo de cámara (inercia de cuello)
@@ -41,8 +22,9 @@ void main() {
   vec2 sceneUV = (v_uv - 0.5) / 1.18 + 0.5 + camOffset;
   sceneUV = clamp(sceneUV, 0.001, 0.999);
 
-  // 2. Determinar si estamos dentro del cristal o en la periferia
-  float inGlasses = getGlassesMask(v_uv);
+  // 2. Determinar si estamos dentro del cristal óptico o en la periferia
+  // Muestreo de textura de apertura exacta generada desde el bisel de la montura
+  float inGlasses = texture2D(u_maskTex, v_uv).r;
 
   // 3. Lectura de profundidad física del píxel (0.0 = celular, 0.5 = laptop, 0.95 = fondo)
   float pixelDepth = texture2D(u_depthTex, sceneUV).r;
@@ -84,11 +66,7 @@ void main() {
       targetFocus = 0.95;
     }
 
-    // Línea divisoria visible Flat-Top
-    if (abs(localUV.y - segTop) < 0.004 && distToCenter < 0.38 && inGlasses > 0.5) {
-      overlayGlow += 0.85;
-    }
-
+    // Nota: La demarcación óptica se visualiza puramente por desenfoque y salto prismático (sin líneas artificiales)
     if (u_overlayActive > 0.5 && insideSegment && inGlasses > 0.5) {
       overlayGlow += 0.25;
     }
@@ -141,14 +119,16 @@ void main() {
   finalSceneUV = clamp(finalSceneUV, 0.001, 0.999);
 
   // 6. Radio de desenfoque Circle of Confusion (CoC)
-  float coc = 0.0;
-  if (inGlasses > 0.5) {
-    float focalDiff = abs(pixelDepth - targetFocus);
-    coc = focalDiff * 26.0 + extraAberration * 22.0;
-  } else {
-    // Periferia presbita fuera del cristal
-    coc = 14.0 * abs(pixelDepth - 0.85) + 5.0;
-  }
+  // Dentro del lente: agudeza según prescripción y aberración lateral progresiva
+  float focalDiff = abs(pixelDepth - targetFocus);
+  float inGlassesCoc = focalDiff * 28.0 + extraAberration * 24.0;
+
+  // Periferia natural presbita fuera del cristal: el ojo no acomoda en cerca/intermedio
+  float presbyopiaCoc = clamp((0.95 - pixelDepth) * 26.0, 0.0, 24.0);
+
+  // Fusión perfecta que llega 100% hasta el bisel del marco
+  float coc = mix(presbyopiaCoc, inGlassesCoc, inGlasses);
+  coc = min(coc, 32.0);
 
   coc = min(coc, 32.0);
 

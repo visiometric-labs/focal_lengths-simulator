@@ -99,13 +99,13 @@ export class LandingScreen {
           </button>
         </div>
 
-        <!-- Créditos y Tecnologías -->
+        <!-- Derechos de Autor y Créditos -->
         <footer class="landing-footer-credits">
+          <span>&copy; <span id="current-year">2026</span> <strong>Visiometric Labs</strong>. Todos los derechos reservados.</span>
+          <span class="footer-separator">•</span>
           <span>Desarrollado por <strong>JayzirTech</strong></span>
           <span class="footer-separator">•</span>
-          <span>Motor WebGL a 60 FPS</span>
-          <span class="footer-separator">•</span>
-          <span>Visiometric Labs</span>
+          <span>Motor WebGL 60 FPS</span>
         </footer>
       </div>
     `;

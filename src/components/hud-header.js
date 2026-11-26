@@ -2,7 +2,8 @@ import { eventBus } from '../core/event-bus.js';
 
 /**
  * Cabecera HUD Superior para Optix™
- * Incluye controles de pantalla completa dinámica, botón de centrado, toggle de Rayos X y Guía de Mostrador
+ * Incluye controles de pantalla completa dinámica, botón de centrado y toggle de Rayos X.
+ * El logotipo de la marca redirige a la portada de bienvenida.
  */
 export class HudHeader {
   constructor(containerElement) {
@@ -20,9 +21,9 @@ export class HudHeader {
     this.element.className = 'hud-header-inner';
 
     this.element.innerHTML = `
-      <!-- Marca y Estado -->
+      <!-- Marca y Estado: Clicable para volver a la portada -->
       <div class="hud-brand-group">
-        <div class="hud-brand-logo">
+        <div id="hud-brand-logo" class="hud-brand-logo" role="button" tabindex="0" title="Volver a la portada de bienvenida">
           <svg width="24" height="24" viewBox="0 0 100 100" fill="none">
             <rect width="100" height="100" rx="24" fill="#070F1E"/>
             <path d="M 16 38 C 24 30, 42 30, 48 38 C 50 40, 50 40, 52 38 C 58 30, 76 30, 84 38 C 88 52, 84 66, 72 70 C 58 72, 54 60, 52 54 C 48 54, 46 72, 28 70 C 16 66, 12 52, 16 38 Z" stroke="#38BDF8" stroke-width="6" fill="#0B1A30"/>
@@ -56,15 +57,6 @@ export class HudHeader {
           <span class="btn-text">Centrar</span>
         </button>
 
-        <!-- Guía Clínica de Mostrador para el Óptico -->
-        <button id="btn-open-pitch-modal" class="btn-hud-pill highlight" type="button" title="Abrir guía de beneficios y argumentos clínicos">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-            <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/>
-            <path d="M6 6h10M6 10h10M6 14h6"/>
-          </svg>
-          <span class="btn-text">Guía de Mostrador</span>
-        </button>
-
         <!-- Botón Dinámico de Pantalla Completa (Entrar / Salir) -->
         <button id="btn-hud-fullscreen-toggle" class="btn-hud-pill btn-fullscreen" type="button" title="Alternar pantalla completa">
           <svg id="icon-fs-enter" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
@@ -82,10 +74,21 @@ export class HudHeader {
   }
 
   bindEvents() {
+    const brandLogo = this.element.querySelector('#hud-brand-logo');
     const btnOverlay = this.element.querySelector('#btn-toggle-overlay');
     const btnRecenter = this.element.querySelector('#btn-recenter-camera');
-    const btnPitch = this.element.querySelector('#btn-open-pitch-modal');
     const btnFs = this.element.querySelector('#btn-hud-fullscreen-toggle');
+
+    brandLogo?.addEventListener('click', () => {
+      eventBus.emit('return-to-landing');
+    });
+
+    brandLogo?.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        eventBus.emit('return-to-landing');
+      }
+    });
 
     btnOverlay?.addEventListener('click', () => {
       this.isOverlayActive = !this.isOverlayActive;
@@ -95,10 +98,6 @@ export class HudHeader {
 
     btnRecenter?.addEventListener('click', () => {
       eventBus.emit('recenter-camera');
-    });
-
-    btnPitch?.addEventListener('click', () => {
-      eventBus.emit('open-pitch-modal');
     });
 
     btnFs?.addEventListener('click', () => {
