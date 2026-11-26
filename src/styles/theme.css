@@ -1,0 +1,79 @@
+/* =========================================================
+   OPTIX™ — Design System & Medical Dark Theme
+   Visiometric Labs • JayzirTech
+   ========================================================= */
+
+:root {
+  /* Paleta Base - Deep Medical Void */
+  --bg-dark-void: #030712;
+  --bg-dark-base: #070F1E;
+  --bg-dark-surface: rgba(11, 23, 44, 0.76);
+  --bg-dark-hover: rgba(18, 38, 72, 0.88);
+  --bg-dark-card: rgba(8, 16, 32, 0.85);
+
+  /* Acentos Bioluminiscentes Clínicos */
+  --cyan-primary: #00F2FE;
+  --cyan-glow: rgba(0, 242, 254, 0.35);
+  --cyan-subtle: #38BDF8;
+  --blue-clinical: #0284C7;
+  --blue-deep: #0369A1;
+
+  /* Estados Ópticos */
+  --optic-corrected: #10B981;
+  --optic-corrected-glow: rgba(16, 185, 129, 0.35);
+  --optic-warning: #F59E0B;
+  --optic-danger: #EF4444;
+
+  /* Textos y Superficies */
+  --text-primary: #F8FAFC;
+  --text-secondary: #94A3B8;
+  --text-tertiary: #64748B;
+  --border-subtle: rgba(56, 189, 248, 0.20);
+  --border-highlight: rgba(0, 242, 254, 0.50);
+
+  /* Efectos de Cristal y Sombras */
+  --glass-blur: blur(18px);
+  --glass-card-shadow: 0 16px 36px rgba(0, 0, 0, 0.65), 0 0 1px 1px var(--border-subtle);
+
+  /* Radios y Curvas */
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-full: 9999px;
+
+  /* Transiciones */
+  --transition-fast: 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-smooth: 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Reset y Normalización Base */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: var(--bg-dark-void);
+  color: var(--text-primary);
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Clases de Utilidad Global */
+.hidden {
+  display: none !important;
+}
+
+.brand-accent {
+  color: var(--cyan-primary);
+  font-weight: 400;
+}

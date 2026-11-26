@@ -1,0 +1,135 @@
+/* =========================================================
+   OPTIX™ — Layout & Viewport Core
+   ========================================================= */
+
+.app-container {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background-color: var(--bg-dark-void);
+}
+
+/* Viewport Principal de Simulación */
+.sim-viewport {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  cursor: grab;
+  touch-action: none;
+}
+
+.sim-viewport:active {
+  cursor: grabbing;
+}
+
+/* Canvas WebGL a Pantalla Completa */
+.sim-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Capa de Montura Oftálmica en Primera Persona */
+.glasses-container {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.glasses-hud-layer {
+  width: 100%;
+  height: 100%;
+}
+
+/* Cabecera HUD Superior */
+.hud-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  padding: 16px 24px;
+  pointer-events: none;
+}
+
+/* Píldora de Guía Gestual Flotante */
+.gaze-hint-pill {
+  position: absolute;
+  top: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  background: rgba(11, 23, 44, 0.78);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-full);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 500;
+  pointer-events: none;
+  z-index: 25;
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.gaze-hint-pill.fade-out {
+  opacity: 0;
+  transform: translate(-50%, -10px);
+}
+
+.hint-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: var(--cyan-primary);
+  box-shadow: 0 0 10px var(--cyan-primary);
+  animation: pulse-dot 2s infinite ease-in-out;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.4); opacity: 0.6; }
+}
+
+/* Contenedor del Selector de Lentes Inferior */
+.lens-selector-container {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 30;
+  pointer-events: auto;
+  max-width: calc(100vw - 32px);
+}
+
+/* Contenedor de la Ficha de Experiencia */
+.experience-card-container {
+  position: absolute;
+  bottom: 24px;
+  left: 24px;
+  z-index: 30;
+  pointer-events: auto;
+  max-width: 380px;
+}
+
+/* Contenedor del Modal de Guía de Mostrador */
+.pitch-modal-container {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

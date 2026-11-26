@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Optix™ | Simulador de Diseños de Lente y Campos Visuales</title>
+  <meta name="description" content="Simulador clínico interactivo en primera persona de diseños oftálmicos según campos visuales y distancias focales: Monofocal (Lejos/Cerca), Bifocal Flat-Top y Progresivo continuo a 60 FPS por Visiometric Labs • JayzirTech.">
+
+  <!-- Favicons Profesionales (Opción 4: Gafas POV Split) -->
+  <link rel="icon" type="image/svg+xml" href="./branding/favicon.svg">
+  <link rel="alternate icon" type="image/png" href="./branding/favicon-opt1.png">
+  <link rel="apple-touch-icon" href="./branding/apple-touch-icon.png">
+
+  <!-- Integración Móvil & Barra de Navegador Nativa (theme-color) -->
+  <meta name="theme-color" content="#070F1E">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Optix">
+  <link rel="manifest" href="./manifest.json">
+
+  <!-- Metadatos Open Graph / WhatsApp / Redes Sociales -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Visiometric Labs • JayzirTech">
+  <meta property="og:title" content="Optix™ | Simulador de Diseños de Lente y Campos Visuales">
+  <meta property="og:description" content="Simulador clínico interactivo en primera persona de diseños oftálmicos según campos visuales y distancias focales: Monofocales, Bifocales Flat-Top y Progresivos continuos de 4 gamas a 60 FPS.">
+  <meta property="og:image" content="https://visiometric-labs.github.io/focal_lengths-simulator/branding/og-cover.jpg">
+  <meta property="og:image:secure_url" content="https://visiometric-labs.github.io/focal_lengths-simulator/branding/og-cover.jpg">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:url" content="https://visiometric-labs.github.io/focal_lengths-simulator/">
+
+  <!-- Tarjeta Twitter / X -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Optix™ | Simulador de Diseños de Lente y Campos Visuales">
+  <meta name="twitter:description" content="Simulador clínico interactivo en primera persona de diseños oftálmicos según campos visuales y distancias focales.">
+  <meta name="twitter:image" content="https://visiometric-labs.github.io/focal_lengths-simulator/branding/og-cover.jpg">
+
+  <!-- Google Fonts: Plus Jakarta Sans + JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+  <!-- Estilos Principales -->
+  <link rel="stylesheet" href="./src/styles/theme.css">
+  <link rel="stylesheet" href="./src/styles/layout.css">
+  <link rel="stylesheet" href="./src/styles/landing.css">
+  <link rel="stylesheet" href="./src/styles/components.css">
+</head>
+<body>
+  <!-- Contenedor Maestro de la Aplicación -->
+  <div id="app" class="app-container">
+
+    <!-- 1. Preloader Fotónico Circular (Se desvanece al terminar de precargar) -->
+    <div id="preloader-container" class="preloader-overlay"></div>
+
+    <!-- 2. Portada de Bienvenida (Landing Screen) -->
+    <div id="landing-container" class="landing-overlay hidden"></div>
+
+    <!-- 3. Experiencia del Simulador POV (WebGL + HUD) -->
+    <main id="sim-viewport" class="sim-viewport">
+      <!-- Canvas de Renderizado WebGL 2D/CoC -->
+      <canvas id="sim-canvas" class="sim-canvas"></canvas>
+
+      <!-- Capa de Montura Oftálmica Realista POV (SVG + Bisel) -->
+      <div id="glasses-container" class="glasses-container"></div>
+
+      <!-- Capa HUD: Cabecera Superior -->
+      <header id="hud-header" class="hud-header"></header>
+
+      <!-- Indicador / Píldora de Guía Gestual -->
+      <div id="gaze-hint" class="gaze-hint-pill">
+        <span class="hint-dot"></span>
+        <span>Arrastra la pantalla para mover la mirada en 1ª persona</span>
+      </div>
+
+      <!-- Selector de Lentes y Gamas (Inferior Centrado) -->
+      <nav id="lens-selector-container" class="lens-selector-container"></nav>
+
+      <!-- Tarjeta de Experiencia del Paciente (Inferior Izquierda / Colapsable) -->
+      <aside id="experience-card-container" class="experience-card-container"></aside>
+    </main>
+
+    <!-- Modal Clínico de Mostrador para el Óptico (Centrado en Beneficios, sin Precios) -->
+    <div id="pitch-modal-container" class="pitch-modal-container hidden"></div>
+  </div>
+
+  <!-- Orquestador Principal JS -->
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>

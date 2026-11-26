@@ -1,0 +1,22 @@
+{
+  "short_name": "Optix",
+  "name": "Optix by Visiometric Labs — Simulador de Diseños de Lente Oftálmica",
+  "description": "Simulador clínico interactivo de diseños oftálmicos según campos visuales y distancias focales (Monofocales, Bifocales, Progresivos)",
+  "icons": [
+    {
+      "src": "./branding/favicon-opt1.png",
+      "type": "image/png",
+      "sizes": "32x32"
+    },
+    {
+      "src": "./branding/apple-touch-icon.png",
+      "type": "image/png",
+      "sizes": "180x180"
+    }
+  ],
+  "start_url": "./",
+  "background_color": "#030712",
+  "theme_color": "#070F1E",
+  "display": "fullscreen",
+  "orientation": "any"
+}

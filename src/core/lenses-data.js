@@ -1,0 +1,102 @@
+/**
+ * Especificaciones Clínicas y Pedagógicas de Diseños de Lente Oftálmica
+ * Enfocado 100% en beneficios de salud visual, ergonomía y campos de visión (Cero mención a precios)
+ */
+export const LENSES_DATA = {
+  monofocal: {
+    id: 'monofocal',
+    name: 'Lente Monofocal',
+    typeIndex: 0,
+    badge: 'Foco Único',
+    description: 'Potencia dióptrica homogénea en toda la superficie de la lente, libre de aberraciones laterales.',
+    subModes: {
+      lejos: {
+        id: 'lejos',
+        subIndex: 0,
+        name: 'Visión Lejana',
+        tag: 'Conducción y Exteriores',
+        iconType: 'distance',
+        explanation: 'Foco calibrado para distancias mayores a 3 metros. La visión de fondo es 100% nítida, pero la laptop y el celular quedan completamente fuera de foco.',
+        ergonomics: 'Excelente para caminar o conducir; no apto para lectura de documentos o pantallas sin retirar la gafa.',
+        blindSpots: 'Visión intermedia y próxima borrosa por limitación de acomodación présbita.',
+      },
+      cerca: {
+        id: 'cerca',
+        subIndex: 1,
+        name: 'Visión Próxima (Lectura)',
+        tag: 'Lectura y Celular',
+        iconType: 'near',
+        explanation: 'Foco calibrado para distancias de 30 a 40 cm. El smartphone y los textos pequeños adquieren máxima nitidez y descanso visual.',
+        ergonomics: 'Requiere quitarse las gafas o mirar por encima del marco para enfocar la habitación o saludar a alguien, de lo contrario produce desorientación.',
+        blindSpots: 'Todo objeto situado a más de 50 cm se muestra profundamente desenfocado.',
+      },
+    },
+  },
+
+  bifocal: {
+    id: 'bifocal',
+    name: 'Lente Bifocal Flat-Top 28',
+    typeIndex: 1,
+    subIndex: 0,
+    badge: 'Doble Campo Focal',
+    description: 'División física en dos campos: visión lejana superior y pastilla inferior de 28 mm para visión próxima.',
+    explanation: 'Combina enfoque de lejos y cerca en una sola montura mediante una línea divisoria horizontal recta (Flat-Top). Al cruzar la frontera de la pastilla con la mirada, experimentas el "Salto de Imagen" (*Image Jump*) por discontinuidad prismática.',
+    ergonomics: 'El paciente debe bajar la vista a la pastilla para leer. Al bajar escaleras o caminar por desniveles, la pastilla magnifica el suelo bruscamente.',
+    blindSpots: 'PUNTO CIEGO INTERMEDIO: La distancia entre 60 cm y 1 metro (pantalla de laptop, teclado, tablero) queda desenfocada tanto en la zona superior como en la inferior.',
+    imageJumpNotice: 'Salto prismático notable al cruzar la línea divisoria.',
+  },
+
+  progresivo: {
+    id: 'progresivo',
+    name: 'Lente Progresivo / Multifocal',
+    typeIndex: 2,
+    badge: 'Gradación Continua',
+    description: 'Transición dióptrica suave e invisible de arriba hacia abajo que cubre lejos, intermedio y cerca sin líneas visibles.',
+    gamas: {
+      baja: {
+        id: 'baja',
+        subIndex: 0,
+        name: 'Gama Básica',
+        tag: 'Corredor Convencional (~30%)',
+        corridorWidth: 'Estrecho (~30% de amplitud)',
+        aberrationLevel: 'Notoria en laterales',
+        explanation: 'Diseño multifocal tradicional. Ofrece visión continua en el pasillo vertical central, pero presenta zonas laterales de astigmatismo marginal tempranas.',
+        ergonomics: 'Exige acompañar la lectura y el monitor girando la cabeza de forma consciente para mantener el objeto dentro del pasillo central.',
+        adaptation: 'Requiere período de adaptación activo para acostumbrarse al movimiento coordinado de cabeza y cuello.',
+      },
+      media: {
+        id: 'media',
+        subIndex: 1,
+        name: 'Gama Media',
+        tag: 'Corredor Equilibrado (~45%)',
+        corridorWidth: 'Equilibrado (~45% de amplitud)',
+        aberrationLevel: 'Moderada y suavizada',
+        explanation: 'Optimización digital de la superficie. Expande el pasillo central de la computadora y suaviza las zonas de aberración periféricas.',
+        ergonomics: 'Permite leer textos y hojas de cálculo con menor rotación de cuello, mejorando la comodidad en jornadas de escritorio.',
+        adaptation: 'Adaptación rápida y natural para usuarios que alternan constantemente entre documentos y pantallas.',
+      },
+      'media-alta': {
+        id: 'media-alta',
+        subIndex: 2,
+        name: 'Gama Media Alta',
+        tag: 'Free-Form Digital (~65%)',
+        corridorWidth: 'Amplio Free-Form (~65% de amplitud)',
+        aberrationLevel: 'Reducida y ergonómica',
+        explanation: 'Tallado digital punto a punto en la cara interna de la lente. El pasillo intermedio es generoso y los campos visuales se integran con fluidez natural.',
+        ergonomics: 'Gran confort cervical. Facilita el trabajo con monitores múltiples y lectura prolongada sin fatiga ocular.',
+        adaptation: 'Adaptación prácticamente instantánea con mínima sensación de balanceo al caminar.',
+      },
+      alta: {
+        id: 'alta',
+        subIndex: 3,
+        name: 'Gama Alta Personalizada',
+        tag: 'Panorámica Premium (~85%)',
+        corridorWidth: 'Panorámico (~85% de amplitud)',
+        aberrationLevel: 'Mínima en bordes extremos',
+        explanation: 'Máxima tecnología de cálculo óptico personalizado. Aberraciones periféricas relegadas al borde del bisel, ofreciendo un campo visual panorámico y nítido.',
+        ergonomics: 'Libertad visual total: el paciente puede explorar la pantalla y el entorno moviendo únicamente los ojos de un lado a otro sin forzar el cuello.',
+        adaptation: 'Sensación de visión natural inmediata, como la de un ojo présbita rejuvenecido.',
+      },
+    },
+  },
+};
