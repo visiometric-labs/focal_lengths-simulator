@@ -312,14 +312,3 @@
   padding-top: 16px;
   text-align: center;
 }
-
-.landing-footer-credits strong,
-.entry-copyright strong {
-  color: var(--text-primary);
-  font-weight: 700;
-}
-
-.footer-separator {
-  color: rgba(148, 163, 184, 0.35);
-  user-select: none;
-}
