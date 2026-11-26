@@ -67,28 +67,42 @@ En la consulta optométrica y el mostrador de ventas, la elección del diseño d
 
 Antes de programar, definamos juntos los siguientes pilares de la experiencia:
 
-### Eje A: El Escenario Interactivo y los Planos de Profundidad
-Para demostrar estos lentes necesitamos un entorno visual con **múltiples planos de profundidad simultáneos**:
-* **Plano Lejano (> 3-4 metros):** Ventana con paisaje exterior, persona entrando a la habitación, televisión o cuadro en la pared.
-* **Plano Intermedio (~ 60 - 80 cm):** Monitor de computador de escritorio o laptop con texto/gráficos.
-* **Plano Cercano (~ 35 - 40 cm):** Celular en la mano, libro o documento de lectura.
+## 🌄 3. La Escena Maestra de Demostración: Oficina y Espacio de Trabajo
 
-### Eje B: Mecánicas de Interacción del Paciente / Asesor
-* ¿Cómo interactúa el usuario para probar el enfoque?
-  * *Opción 1: Movimiento de mirada / arrastre vertical y horizontal:* El usuario desplaza el punto de enfoque o el ángulo de visión para experimentar qué parte de la lente está usando.
-  * *Opción 2: Selector de objetos de interés:* Clic en "Ver Celular", "Ver Computador" o "Ver al Fondo" para que la lente y el ojo se acomoden automáticamente según el diseño activo.
-  * *Opción 3: Mapa de calor / Visualizador de aberraciones:* Un botón tipo "Rayos X" que colorea las zonas de la lente (verde = nítido, amarillo = transición, rojo = aberración lateral).
+La imagen de referencia oficial (`docs/assets/optix-office-reference.jpg`) fue seleccionada y optimizada porque reúne de forma natural y simultánea los **tres planos focales de la vida cotidiana moderna**:
 
-### Eje C: Nombre de Marca en la Suite Visiometric Labs
-Recordemos los nombres de sus hermanos:
-* **Ocularis** (Refracción y Patologías)
-* **Chromatis** (Filtros y Tratamientos)
-* **Luminix** (Lentes Fotosensibles y Transitions)
-* ¿Qué nombre bautizará a este nuevo integrante? *(Podemos proponer nombres dedicados a la distancia focal, enfoque, profundidad y geometría óptica).*
+1. **Plano Cercano (~30 - 40 cm) — Smartphone (Inferior Izquierda):**
+   * Brazo sosteniendo el teléfono con mensajes de texto de alta definición.
+   * **Comportamiento en Monofocal Lejos:** Completamente desenfocado e ilegible.
+   * **Comportamiento en Bifocal:** Nítido al alinear la pastilla inferior.
+   * **Comportamiento en Progresivo:** Nítido en el tercio inferior del cristal.
+
+2. **Plano Intermedio (~60 - 80 cm) — Laptop y Taza de Café (Centro Derecha):**
+   * Pantalla con gráficas analíticas de ventas Q3, tablas de datos y métricas.
+   * **El Talón de Aquiles del Bifocal:** Queda exactamente en el punto ciego (entre la visión lejana y la pastilla de lectura), viéndose borroso y forzando la postura del paciente.
+   * **La Gran Venta del Progresivo:** Se lee con nitidez perfecta a través del corredor intermedio.
+
+3. **Plano Lejano (> 3 - 5 metros) — Oficina Abierta y Compañeros (Superior / Fondo):**
+   * Compañeros de trabajo en sus escritorios, pasillos y luz natural de fondo.
+   * **Comportamiento en Monofocal Cerca (Gafas de lectura):** Fondo totalmente borroso y mareante al levantar la vista.
+   * **Comportamiento en Bifocal y Progresivo:** Totalmente nítido en la mitad superior del cristal.
 
 ---
 
-## 🏛️ 4. Estructura del Ecosistema
+## 🎛️ 4. Mecánica de Navegación y Control en 1ª Persona
+
+* **Perspectiva en 1ª Persona (POV):** El paciente observa el espacio a través de la montura oftálmica.
+* **Control Gestual Intuitivo (Drag / Touch / Mouse):**
+  * El paciente arrastra con su dedo en pantallas táctiles (iPads, tablets en mostrador) o con el mouse para subir o bajar la cabeza suavemente.
+  * Al mover la mirada arriba o abajo, experimenta físicamente qué zona de la lente está alineada con cada objeto y cómo se aclara o desenfoca.
+* **Los 3 Lentes Oficiales:**
+  1. **Monofocal**
+  2. **Bifocal** (con pastilla visible y salto de imagen)
+  3. **Progresivo** (con corredor continuo y aberraciones laterales)
+
+---
+
+## 🏛️ 5. Estructura del Ecosistema
 
 ```
 Proyecto Ópticas/
