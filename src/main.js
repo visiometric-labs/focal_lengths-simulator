@@ -227,7 +227,9 @@ class App {
   }
 }
 
-// Inicialización al cargar el DOM
-window.addEventListener('DOMContentLoaded', () => {
+// Inicialización robusta compatible con carga diferida y módulos ES
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => new App());
+} else {
   new App();
-});
+}
