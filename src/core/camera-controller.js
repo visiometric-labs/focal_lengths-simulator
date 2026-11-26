@@ -54,10 +54,9 @@ export class CameraController {
     this.lastPointerX = e.clientX;
     this.lastPointerY = e.clientY;
 
-    // Arrastre POV: Eje X invertido a petición del usuario (pan natural de agarre)
-    // Deslizar ratón/dedo hacia abajo (dy > 0) -> inclinar mirada hacia el escritorio/celular (-pitch)
+    // Arrastre POV: Eje X y Eje Y configurados según preferencia ergonómica del usuario
     this.targetYaw -= dx * this.sensitivity;
-    this.targetPitch -= dy * this.sensitivity;
+    this.targetPitch += dy * this.sensitivity;
 
     // Restringir a los límites anatómicos ampliados
     this.targetYaw = Math.max(-this.maxYaw, Math.min(this.maxYaw, this.targetYaw));
