@@ -16,6 +16,29 @@ uniform float u_subMode;            // Monofocal (0: Lejos, 1: Cerca) | Progresi
 uniform float u_overlayActive;      // 0.0: Apagado, 1.0: Modo Rayos X activo
 uniform float u_aspect;             // Ancho / Alto
 
+// Pastilla Flat-Top 28 anatómica: D-Shape con borde superior plano y esquinas inferiores redondeadas
+bool isInsideFlatTop(vec2 uv, float cx) {
+  float segTop = 0.40;
+  float segBottom = 0.12;
+  float halfWidth = 0.13;
+  
+  if (uv.y > segTop || uv.y < segBottom) return false;
+  
+  float dx = abs(uv.x - cx);
+  if (dx > halfWidth) return false;
+  
+  // Esquinas inferiores redondeadas características del Flat-Top de laboratorio
+  float roundR = 0.06;
+  if (uv.y < segBottom + roundR) {
+    float dy = (segBottom + roundR) - uv.y;
+    float cornerX = halfWidth - roundR;
+    if (dx > cornerX) {
+      return length(vec2(dx - cornerX, dy)) <= roundR;
+    }
+  }
+  return true;
+}
+
 void main() {
   // 1. Mapeo de coordenadas con paneo de cámara (rango amplio de exploración POV)
   // Zoom = 1.80 permite visualizar ~55% de la escena para tener un recorrido panorámico fluido
@@ -54,11 +77,13 @@ void main() {
 
   } else if (u_lensType < 1.5) {
     // -----------------------------------------------------------------
-    // CASO B: BIFOCAL FLAT-TOP 28 (Pastilla en la mitad inferior de la lente)
+    // CASO B: BIFOCAL FLAT-TOP 28 (Pastillas anatómicas D-Shape en cada ojo)
     // -----------------------------------------------------------------
-    float segTop = 0.44; // Límite superior de la pastilla de cerca (zona inferior)
-    float distToCenter = abs(localUV.x - 0.5);
-    bool insideSegment = (localUV.y < segTop) && (distToCenter < 0.36);
+    // Segmento D-Shape izquierdo (cx ≈ 0.33) y derecho (cx ≈ 0.67)
+    // Confinadas estrictamente al cristal (inGlasses > 0.5) para que NUNCA sobresalgan del marco
+    bool inLeftSeg = isInsideFlatTop(localUV, 0.33);
+    bool inRightSeg = isInsideFlatTop(localUV, 0.67);
+    bool insideSegment = (inLeftSeg || inRightSeg) && (inGlasses > 0.5);
 
     if (insideSegment) {
       targetFocus = 0.16;  // Cerca (35 cm)
@@ -67,8 +92,8 @@ void main() {
       targetFocus = 0.95;  // Lejos (>3 m)
     }
 
-    // Nota: La demarcación óptica se visualiza puramente por desenfoque y salto prismático (sin líneas artificiales)
-    if (u_overlayActive > 0.5 && insideSegment && inGlasses > 0.5) {
+    // Demarcación puramente óptica; resplandor sólo en modo Rayos X activo
+    if (u_overlayActive > 0.5 && insideSegment) {
       overlayGlow += 0.25;
     }
 
@@ -115,8 +140,8 @@ void main() {
     }
   }
 
-  // 5. Salto prismático
-  vec2 finalSceneUV = sceneUV + vec2(0.0, imageJumpY);
+  // 5. Salto prismático confinado 100% al interior del cristal de las gafas
+  vec2 finalSceneUV = sceneUV + (inGlasses > 0.5 ? vec2(0.0, imageJumpY) : vec2(0.0));
   finalSceneUV = clamp(finalSceneUV, 0.001, 0.999);
 
   // 6. Radio de desenfoque Circle of Confusion (CoC)
@@ -129,8 +154,6 @@ void main() {
 
   // Fusión perfecta que llega 100% hasta el bisel del marco
   float coc = mix(presbyopiaCoc, inGlassesCoc, inGlasses);
-  coc = min(coc, 32.0);
-
   coc = min(coc, 32.0);
 
   // 7. Muestreo Bokeh con Espiral Dorada (Golden Spiral)
