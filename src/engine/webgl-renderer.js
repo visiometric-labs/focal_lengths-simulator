@@ -233,8 +233,10 @@ export class WebGLRenderer {
         const texture = gl.createTexture();
         gl.bindTexture(gl.TEXTURE_2D, texture);
 
-        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
+        // Invertir Y al subir textura para que el plano superior (y=1) coincida con la parte superior de la imagen
+        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
+        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
 
         // Muestreo bilineal con clamp to edge para cero costuras
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);

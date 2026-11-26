@@ -17,16 +17,17 @@ uniform float u_overlayActive;      // 0.0: Apagado, 1.0: Modo Rayos X activo
 uniform float u_aspect;             // Ancho / Alto
 
 void main() {
-  // 1. Mapeo de coordenadas con paneo de cámara (inercia de cuello)
-  vec2 camOffset = u_camera * vec2(0.18, 0.14);
-  vec2 sceneUV = (v_uv - 0.5) / 1.18 + 0.5 + camOffset;
+  // 1. Mapeo de coordenadas con paneo de cámara (rango amplio de exploración POV)
+  // Zoom = 1.80 permite visualizar ~55% de la escena para tener un recorrido panorámico fluido
+  vec2 camOffset = u_camera * vec2(0.36, 0.28);
+  vec2 sceneUV = (v_uv - 0.5) / 1.80 + 0.5 + camOffset;
   sceneUV = clamp(sceneUV, 0.001, 0.999);
 
   // 2. Determinar si estamos dentro del cristal óptico o en la periferia
   // Muestreo de textura de apertura exacta generada desde el bisel de la montura
   float inGlasses = texture2D(u_maskTex, v_uv).r;
 
-  // 3. Lectura de profundidad física del píxel (0.0 = celular, 0.5 = laptop, 0.95 = fondo)
+  // 3. Lectura de profundidad física del píxel (0.0 = celular/manos, 0.5 = laptop, 0.95 = fondo lejano)
   float pixelDepth = texture2D(u_depthTex, sceneUV).r;
 
   // 4. Cálculo de la potencia focal objetivo del lente en este píxel
@@ -53,17 +54,17 @@ void main() {
 
   } else if (u_lensType < 1.5) {
     // -----------------------------------------------------------------
-    // CASO B: BIFOCAL FLAT-TOP 28
+    // CASO B: BIFOCAL FLAT-TOP 28 (Pastilla en la mitad inferior de la lente)
     // -----------------------------------------------------------------
-    float segTop = 0.44;
+    float segTop = 0.44; // Límite superior de la pastilla de cerca (zona inferior)
     float distToCenter = abs(localUV.x - 0.5);
-    bool insideSegment = (localUV.y < segTop) && (distToCenter < 0.38);
+    bool insideSegment = (localUV.y < segTop) && (distToCenter < 0.36);
 
     if (insideSegment) {
-      targetFocus = 0.16;
+      targetFocus = 0.16;  // Cerca (35 cm)
       imageJumpY = 0.022; // Salto prismático
     } else {
-      targetFocus = 0.95;
+      targetFocus = 0.95;  // Lejos (>3 m)
     }
 
     // Nota: La demarcación óptica se visualiza puramente por desenfoque y salto prismático (sin líneas artificiales)
@@ -73,10 +74,10 @@ void main() {
 
   } else {
     // -----------------------------------------------------------------
-    // CASO C: PROGRESIVO CONTINUO (4 GAMAS)
+    // CASO C: PROGRESIVO CONTINUO (4 GAMAS: Lejos arriba, Cerca abajo)
     // -----------------------------------------------------------------
-    float t = smoothstep(0.20, 0.78, localUV.y);
-    targetFocus = mix(0.16, 0.95, t);
+    float t = smoothstep(0.20, 0.80, localUV.y);
+    targetFocus = mix(0.16, 0.95, t); // Abajo t=0 -> 0.16 (cerca), Arriba t=1 -> 0.95 (lejos)
 
     float corridorWidth = 0.44;
     float aberrationStrength = 1.0;

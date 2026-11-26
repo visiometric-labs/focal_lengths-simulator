@@ -178,13 +178,7 @@ class App {
       if (this.renderer) {
         this.renderer.stop();
       }
-      if (document.fullscreenElement || document.webkitFullscreenElement) {
-        if (document.exitFullscreen) {
-          document.exitFullscreen().catch(() => {});
-        } else if (document.webkitExitFullscreen) {
-          document.webkitExitFullscreen();
-        }
-      }
+      // Nota: No se fuerza la salida de pantalla completa; se respeta el modo kiosco/inmersivo
       if (this.landing) {
         this.landing.show();
       }

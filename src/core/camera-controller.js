@@ -12,11 +12,11 @@ export class CameraController {
     this.targetYaw = 0.0;
     this.targetPitch = 0.0;
 
-    // Límites anatómicos de movimiento de cabeza/ojos
-    this.maxYaw = 0.42;    // Giro lateral izq / der
-    this.maxPitch = 0.38;  // Cabeceo vertical arriba (lejos) / abajo (cerca)
+    // Límites anatómicos de movimiento de cabeza/ojos (rango amplio de exploración)
+    this.maxYaw = 0.88;    // Giro lateral izq / der amplio
+    this.maxPitch = 0.72;  // Cabeceo vertical amplio: escritorio/celular abajo <-> sala/reloj arriba
 
-    this.sensitivity = 0.0016;
+    this.sensitivity = 0.0022;
     this.lerpSpeed = 0.12;
 
     this.isDragging = false;
@@ -54,13 +54,12 @@ export class CameraController {
     this.lastPointerX = e.clientX;
     this.lastPointerY = e.clientY;
 
-    // Arrastrar la pantalla: movimiento directo natural en 1ª persona (POV)
-    // Deslizar a la derecha (dx > 0) -> girar cabeza/ojos a la derecha (+yaw)
-    // Deslizar hacia abajo (dy > 0) -> inclinar cabeza/ojos hacia abajo (-pitch, escritorio/celular)
-    this.targetYaw += dx * this.sensitivity;
+    // Arrastre POV: Eje X invertido a petición del usuario (pan natural de agarre)
+    // Deslizar ratón/dedo hacia abajo (dy > 0) -> inclinar mirada hacia el escritorio/celular (-pitch)
+    this.targetYaw -= dx * this.sensitivity;
     this.targetPitch -= dy * this.sensitivity;
 
-    // Restringir a los límites anatómicos
+    // Restringir a los límites anatómicos ampliados
     this.targetYaw = Math.max(-this.maxYaw, Math.min(this.maxYaw, this.targetYaw));
     this.targetPitch = Math.max(-this.maxPitch, Math.min(this.maxPitch, this.targetPitch));
   }

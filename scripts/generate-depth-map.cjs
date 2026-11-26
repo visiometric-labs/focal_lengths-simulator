@@ -3,7 +3,7 @@ const path = require('path');
 const sharp = require('../../filters-simulator/node_modules/sharp');
 
 const outDir = path.resolve(__dirname, '../public/scenes');
-const realOfficeSrc = path.resolve(__dirname, '../../filters-simulator/public/scenes/office-real.jpg');
+const aiImageSrc = 'C:/Users/jayzi/.gemini/antigravity/brain/c7987174-1c52-4bb0-9046-fc447b9a738b/ophthalmology_pov_office_focal_depths_final_1795709937753.jpg';
 const masterJpgPath = path.join(outDir, 'office-master.jpg');
 const depthPngPath = path.join(outDir, 'office-depth.png');
 
@@ -11,72 +11,115 @@ async function generateMasterAndDepth() {
   const width = 2752;
   const height = 1536;
 
-  console.log('1. Generando placa fotográfica 2.7K ultranítida office-master.jpg...');
-  await sharp(realOfficeSrc)
-    .resize(width, height)
-    .linear(1.18, -12) // Mayor contraste y negros profundos
-    .modulate({ brightness: 0.98, saturation: 1.08 })
-    .sharpen({ sigma: 1.3, m1: 1.2, m2: 2.5 }) // Textos del monitor y celular hipernítidos
-    .jpeg({ quality: 96, chromaSubsampling: '4:4:4' })
+  console.log('1. Escalando con Lanczos3 y unsharp mask la nueva escena AI a 2.7K...');
+  await sharp(aiImageSrc)
+    .resize(width, height, { kernel: 'lanczos3' })
+    .linear(1.06, -6) // Realce sutil de contraste y saturación
+    .modulate({ brightness: 1.0, saturation: 1.04 })
+    .sharpen({ sigma: 1.2, m1: 1.1, m2: 2.2 }) // Textos del smartphone, dashboard y gráficos hipernítidos
+    .jpeg({ quality: 98, chromaSubsampling: '4:4:4' })
     .toFile(masterJpgPath);
   console.log('office-master.jpg generado con éxito en:', masterJpgPath);
 
-  console.log('2. Generando mapa de profundidad 2.7K calibrado office-depth.png...');
-  // Mapa de profundidad fotográfico con gradientes continuos y desenfoque gausiano:
-  // Fondo lejano (>3m): valor 242-255 (blanco / gris muy claro)
-  // Escritorio / Laptop intermedia (~70cm): valor 128 (gris medio)
-  // Celular y mano en primer plano (~35cm): valor 38 (gris oscuro / casi negro)
+  console.log('2. Generando mapa de profundidad calibrado para la nueva escena...');
+  // Mapa de profundidad fotométrico multicapa con 4 planos focales:
+  // 1. Cerca (~30-35cm, z ≈ 0.16 / valor 41): Manos con smartphone, hoja clínica, taza
+  // 2. Intermedio (~70cm, z ≈ 0.50 / valor 128): Monitor con dashboard, teclado, ratón
+  // 3. Medio (~1.5-2.5m, z ≈ 0.72 / valor 184): Pizarrón con notas, estantería, lámpara
+  // 4. Lejos (>4m, z ≈ 0.95-1.0 / valor 245-255): Mesa de reunión, reloj, ventanal panorámico con rascacielos
   const depthSvg = `<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">
     <defs>
-      <!-- Gradiente general de profundidad del espacio de oficina (fondo hacia mesa) -->
-      <linearGradient id="office-room-depth" x1="0%" y1="0%" x2="0%" y2="100%">
-        <stop offset="0%" stop-color="#FAFAFA" />   <!-- Techo / fondo infinito: 250 -->
-        <stop offset="42%" stop-color="#E8E8E8" />  <!-- Paredes y compañeros: 232 -->
-        <stop offset="68%" stop-color="#B0B0B0" />  <!-- Borde lejano del escritorio: 176 -->
-        <stop offset="100%" stop-color="#888888" /> <!-- Plano mesa general: 136 -->
+      <!-- Gradiente general de fondo (lejos) -->
+      <linearGradient id="deep-room-depth" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#C0C0C0" />   <!-- Pared izquierda: 192 -->
+        <stop offset="45%" stop-color="#E8E8E8" />  <!-- Pared central: 232 -->
+        <stop offset="70%" stop-color="#F8F8F8" />  <!-- Ventanales con rascacielos: 248 -->
+        <stop offset="100%" stop-color="#FFFFFF" /> <!-- Cielo exterior infinito: 255 -->
       </linearGradient>
 
-      <!-- Gradiente de la zona intermedia de la Laptop y escritorio -->
-      <radialGradient id="laptop-depth" cx="58%" cy="56%" r="38%">
-        <stop offset="0%" stop-color="#7C7C7C" />   <!-- Pantalla laptop (~70 cm): 124 -->
-        <stop offset="65%" stop-color="#8E8E8E" />  <!-- Teclado y taza: 142 -->
-        <stop offset="100%" stop-color="#A5A5A5" /> <!-- Transición al fondo -->
+      <!-- Gradiente del pizarrón blanco en pared izquierda (~1.8m) -->
+      <linearGradient id="whiteboard-depth" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#B8B8B8" />   <!-- 184 (z ≈ 0.72) -->
+        <stop offset="100%" stop-color="#C4C4C4" /> <!-- 196 -->
+      </linearGradient>
+
+      <!-- Gradiente del monitor panorámico y teclado (~70cm) -->
+      <radialGradient id="monitor-depth" cx="50%" cy="50%" r="55%">
+        <stop offset="0%" stop-color="#7C7C7C" />   <!-- 124 (z ≈ 0.49) -->
+        <stop offset="80%" stop-color="#848484" />  <!-- 132 -->
+        <stop offset="100%" stop-color="#929292" /> <!-- 146 -->
       </radialGradient>
 
-      <!-- Gradiente de Smartphone en mano (Primer plano ~35 cm) -->
-      <radialGradient id="phone-depth" cx="18%" cy="78%" r="35%">
-        <stop offset="0%" stop-color="#242424" />   <!-- Celular (~35 cm): 36 -->
-        <stop offset="45%" stop-color="#2E2E2E" />  <!-- Pantalla y mano: 46 -->
-        <stop offset="75%" stop-color="#484848" />  <!-- Muñeca y antebrazo: 72 -->
-        <stop offset="100%" stop-color="#808080" /> <!-- Unión con la mesa -->
+      <!-- Gradiente de la superficie de la mesa de madera -->
+      <linearGradient id="desk-depth" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#949494" />   <!-- Borde posterior mesa: 148 -->
+        <stop offset="50%" stop-color="#808080" />  <!-- Zona teclado: 128 -->
+        <stop offset="100%" stop-color="#686868" /> <!-- Borde frontal: 104 -->
+      </linearGradient>
+
+      <!-- Gradiente de smartphone y manos (Cerca ~35cm) -->
+      <radialGradient id="phone-depth" cx="38%" cy="55%" r="48%">
+        <stop offset="0%" stop-color="#242424" />   <!-- Celular: 36 (z ≈ 0.14) -->
+        <stop offset="60%" stop-color="#2C2C2C" />  <!-- Dedos y muñeca: 44 (z ≈ 0.17) -->
+        <stop offset="100%" stop-color="#555555" /> <!-- Borde mesa -->
       </radialGradient>
 
-      <filter id="soft-blur" x="-10%" y="-10%" width="120%" height="120%">
-        <feGaussianBlur stdDeviation="24" />
+      <!-- Gradiente del reporte clínico en papel y taza (Cerca ~35cm) -->
+      <radialGradient id="paper-mug-depth" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#262626" />   <!-- Papel: 38 (z ≈ 0.15) -->
+        <stop offset="70%" stop-color="#323232" />  <!-- Taza y bolígrafo: 50 -->
+        <stop offset="100%" stop-color="#606060" /> <!-- Unión con mesa -->
+      </radialGradient>
+
+      <filter id="soft-blur" x="-20%" y="-20%" width="140%" height="140%">
+        <feGaussianBlur stdDeviation="28" />
       </filter>
     </defs>
 
-    <!-- 1. Fondo completo de la oficina (Profundidad z ≈ 0.90 - 1.0) -->
-    <rect width="${width}" height="${height}" fill="url(#office-room-depth)" />
+    <!-- 1. Plano Lejano / Infinito (z ≈ 0.90 - 1.0) -->
+    <rect width="${width}" height="${height}" fill="url(#deep-room-depth)" />
 
-    <!-- 2. Plano medio: Escritorio, Laptop y taza de café (Profundidad z ≈ 0.48 - 0.55) -->
+    <!-- Sala de reuniones y ventanal al fondo (z ≈ 0.88 - 0.95) -->
     <g filter="url(#soft-blur)">
-      <!-- Superficie de la mesa -->
-      <path d="M 322 753 L 2752 645 L 2752 1536 L 484 1536 Z" fill="#8C8C8C" opacity="0.85" />
-      <!-- Silueta amplia de laptop y área de trabajo central -->
-      <ellipse cx="1558" cy="887" rx="752" ry="484" fill="url(#laptop-depth)" />
+      <!-- Ventanales y rascacielos (Derecha superior) -->
+      <rect x="1400" y="0" width="1352" height="1100" fill="#F4F4F4" />
+      <!-- Mesa de reunión con compañeros -->
+      <ellipse cx="2300" cy="850" rx="420" ry="240" fill="#D0D0D0" />
     </g>
 
-    <!-- 3. Primer plano: Brazo, mano y Smartphone (Profundidad z ≈ 0.12 - 0.20) -->
+    <!-- 2. Plano Medio: Pizarrón izquierdo, estantería y lámpara (z ≈ 0.70 - 0.75) -->
     <g filter="url(#soft-blur)">
-      <!-- Antebrazo y mano que entra desde la esquina inferior izquierda -->
-      <path d="M 0 860 
-               C 268 860, 645 914, 779 1102 
-               C 913 1264, 860 1452, 645 1536 
-               L 0 1536 Z" 
+      <!-- Pizarrón blanco en pared izquierda -->
+      <rect x="40" y="80" width="820" height="680" rx="20" fill="url(#whiteboard-depth)" />
+      <!-- Estantería y lámpara de pie -->
+      <rect x="880" y="240" width="460" height="700" fill="#AEAEAE" />
+    </g>
+
+    <!-- 3. Plano Intermedio: Mesa de trabajo, Monitor con dashboard, teclado y ratón (z ≈ 0.48 - 0.55) -->
+    <g filter="url(#soft-blur)">
+      <!-- Superficie amplia del escritorio de madera -->
+      <path d="M 80 880 L 2752 760 L 2752 1536 L 80 1536 Z" fill="url(#desk-depth)" />
+      <!-- Pantalla panorámica del monitor central -->
+      <rect x="1350" y="420" width="700" height="540" rx="14" fill="url(#monitor-depth)" />
+      <!-- Soporte, teclado ergonómico y ratón -->
+      <ellipse cx="1500" cy="1120" rx="420" ry="160" fill="#787878" />
+    </g>
+
+    <!-- 4. Primer Plano: Manos con smartphone, hoja clínica, taza y bolígrafo (z ≈ 0.12 - 0.18) -->
+    <g filter="url(#soft-blur)">
+      <!-- Brazo izquierdo, manos y smartphone -->
+      <path d="M 0 1150 
+               C 220 1150, 480 1020, 680 940 
+               C 880 880, 1160 980, 1160 1250 
+               C 1160 1450, 920 1536, 0 1536 Z" 
             fill="url(#phone-depth)" />
-      <!-- Foco preciso en el cuerpo del smartphone -->
-      <ellipse cx="456" cy="1210" rx="376" ry="295" fill="#242424" opacity="0.95" />
+      <!-- Foco nítido en el smartphone -->
+      <ellipse cx="940" cy="1180" rx="180" ry="240" fill="#202020" />
+
+      <!-- Reporte clínico en papel y taza de café a la derecha -->
+      <ellipse cx="2180" cy="1380" rx="420" ry="200" fill="url(#paper-mug-depth)" />
+      <!-- Taza con logo -->
+      <ellipse cx="2340" cy="1150" rx="140" ry="120" fill="#242424" />
     </g>
   </svg>`;
 
