@@ -100,7 +100,9 @@ export class LandingScreen {
         </div>
 
         <div class="landing-footer-credits entry-copyright">
-          © <span class="current-year">2026</span> JayzirTech. Todos los derechos reservados. • Optix™ by Visiometric Labs
+          <span>© <span class="current-year">2026</span> <strong>JayzirTech</strong>. Todos los derechos reservados.</span>
+          <span class="footer-separator">•</span>
+          <span><strong>Optix<span class="brand-accent">™</span></strong> by <strong>Visiometric Labs</strong></span>
         </div>
       </div>
     `;
