@@ -122,8 +122,8 @@ class App {
         this.preloader.updateStatus('Cargando escena 4K Ultra HD...');
       }
 
-      const sceneUrl = getAssetUrl('scenes/skyline-workstation-4k.jpg?v=ai-expanded-v5');
-      const depthUrl = getAssetUrl('scenes/skyline-workstation-depth.png?v=ai-expanded-v5');
+      const sceneUrl = getAssetUrl('scenes/skyline-workstation-4k.jpg?v=ai-expanded-v6');
+      const depthUrl = getAssetUrl('scenes/skyline-workstation-depth.png?v=ai-expanded-v6');
 
       if (this.renderer) {
         await this.renderer.loadTexture(sceneUrl, false);
