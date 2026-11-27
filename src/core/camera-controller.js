@@ -15,7 +15,7 @@ export class CameraController {
     // Límites anatómicos de movimiento de cabeza/ojos (rango panorámico ultra amplio)
     this.maxYaw = 0.88;          // Giro lateral izq / der amplio
     this.maxPitchUp = 1.05;      // Inclinación hacia arriba (cúspides de rascacielos y cielo abierto)
-    this.maxPitchDown = 1.05;    // Inclinación hacia abajo completa (lectura de libreta, tablet y borde del escritorio)
+    this.maxPitchDown = 1.15;    // Inclinación hacia abajo completa (lectura de libreta, tablet y borde del escritorio)
 
     this.sensitivity = 0.0022;
     this.lerpSpeed = 0.12;
