@@ -12,9 +12,10 @@ export class CameraController {
     this.targetYaw = 0.0;
     this.targetPitch = 0.0;
 
-    // Límites anatómicos de movimiento de cabeza/ojos (rango amplio de exploración)
-    this.maxYaw = 0.88;    // Giro lateral izq / der amplio
-    this.maxPitch = 0.72;  // Cabeceo vertical amplio: escritorio/celular abajo <-> sala/reloj arriba
+    // Límites anatómicos de movimiento de cabeza/ojos (rango panorámico ultra amplio)
+    this.maxYaw = 0.88;          // Giro lateral izq / der amplio
+    this.maxPitchUp = 1.05;      // Inclinación hacia arriba ampliada (cúspides de rascacielos y cielo)
+    this.maxPitchDown = 0.72;    // Inclinación hacia abajo (escritorio y accesorios de lectura)
 
     this.sensitivity = 0.0022;
     this.lerpSpeed = 0.12;
@@ -60,7 +61,7 @@ export class CameraController {
 
     // Restringir a los límites anatómicos ampliados
     this.targetYaw = Math.max(-this.maxYaw, Math.min(this.maxYaw, this.targetYaw));
-    this.targetPitch = Math.max(-this.maxPitch, Math.min(this.maxPitch, this.targetPitch));
+    this.targetPitch = Math.max(-this.maxPitchDown, Math.min(this.maxPitchUp, this.targetPitch));
   }
 
   onPointerUp() {

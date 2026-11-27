@@ -40,10 +40,11 @@ bool isInsideFlatTop(vec2 uv, float cx) {
 }
 
 void main() {
-  // 1. Mapeo de coordenadas con paneo de cámara (rango amplio de exploración POV)
-  // Zoom = 1.80 permite visualizar ~55% de la escena para tener un recorrido panorámico fluido
-  vec2 camOffset = u_camera * vec2(0.36, 0.28);
-  vec2 sceneUV = (v_uv - 0.5) / 1.80 + 0.5 + camOffset;
+  // 1. Mapeo de coordenadas con paneo de cámara (rango amplio de exploración POV calibrado)
+  // Zoom = 1.72 y factores de paneo garantizan sceneUV estrictamente dentro de [0.003, 0.997]
+  // eliminando por completo cualquier estiramiento o pixel clamping lateral
+  vec2 camOffset = u_camera * vec2(0.235, 0.195);
+  vec2 sceneUV = (v_uv - 0.5) / 1.72 + 0.5 + camOffset;
   sceneUV = clamp(sceneUV, 0.001, 0.999);
 
   // 2. Determinar si estamos dentro del cristal óptico o en la periferia
