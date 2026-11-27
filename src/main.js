@@ -119,11 +119,11 @@ class App {
 
     try {
       if (this.preloader) {
-        this.preloader.updateStatus('Cargando placa fotográfica 2K...');
+        this.preloader.updateStatus('Cargando escena 4K Ultra HD...');
       }
 
-      const sceneUrl = getAssetUrl('scenes/office-master.jpg');
-      const depthUrl = getAssetUrl('scenes/office-depth.png');
+      const sceneUrl = getAssetUrl('scenes/skyline-workstation-4k.jpg?v=20261127-4k');
+      const depthUrl = getAssetUrl('scenes/skyline-workstation-depth.png?v=20261127-4k');
 
       if (this.renderer) {
         await this.renderer.loadTexture(sceneUrl, false);
