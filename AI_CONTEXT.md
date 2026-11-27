@@ -14,7 +14,8 @@
 * **Repositorio Remoto en GitHub:** `https://github.com/visiometric-labs/focal_lengths-simulator.git`
 * **URL en Producción (GitHub Pages):** `https://visiometric-labs.github.io/focal_lengths-simulator/`
 * **Identidad Visual y Activos Gráficos:**
-  - `public/branding/og-cover.jpg`: Banner social 3D 1200×630 para WhatsApp, Open Graph y Twitter Cards (`?v=2`).
+  - `public/branding/og-card-whatsapp.jpg` (y `og-cover.jpg`): Banner social 3D 1200×630 para WhatsApp, Open Graph y Twitter Cards (`?v=2`).
+  - `public/branding/og-card-whatsapp.png`: Versión rasterizada PNG sin pérdidas.
   - `public/branding/favicon.svg`: Isotipo vectorial de montura con doble foco óptico.
   - `public/branding/favicon-opt1.png` / `apple-touch-icon.png`: Versiones PNG rasterizadas.
 * **Ecosistema de Hermanos (Visiometric Labs):**
