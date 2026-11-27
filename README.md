@@ -1,18 +1,46 @@
-# 📐 Optix™ — Simulador de Distancias Focales por Visiometric Labs
+# Optix™ by Visiometric Labs 📐👓
 
-> **Simulador clínico e interactivo en primera persona de diseños de lente oftálmica según campos visuales y distancias focales: Monofocales, Bifocales Flat-Top 28 y Progresivos continuos de 4 gamas, renderizado en tiempo real con WebGL a 60 FPS.**
+> **Simulador Clínico e Interactivo de Diseños de Lente Oftálmica según Campos Visuales y Distancias Focales**  
+> *Monofocales (Lejos / Cerca) • Bifocales Flat-Top 28 • Progresivos Continuos de 4 Gamas*  
+> Desarrollado por **JayzirTech** para **Visiometric Labs**.
 
-🌐 **Demo en vivo:** [visiometric-labs.github.io/focal_lengths-simulator](https://visiometric-labs.github.io/focal_lengths-simulator/)
-📦 **Repositorio:** [github.com/visiometric-labs/focal_lengths-simulator](https://github.com/visiometric-labs/focal_lengths-simulator)
+<p align="center">
+  <a href="README.md"><strong>🇪🇸 Versión en Español</strong></a> • 
+  <a href="README_EN.md"><strong>🇺🇸 English Version</strong></a>
+</p>
+
+<p align="center">
+  <a href="https://visiometric-labs.github.io/focal_lengths-simulator/"><img src="https://github.com/visiometric-labs/focal_lengths-simulator/actions/workflows/deploy.yml/badge.svg" alt="Despliegue GitHub Pages"></a>
+  <a href="https://visiometric-labs.github.io/focal_lengths-simulator/"><img src="https://img.shields.io/badge/Demo%20En%20Vivo-GitHub%20Pages-38BDF8?style=flat&logo=github" alt="Demo En Vivo"></a>
+  <img src="https://img.shields.io/badge/WebGL-60%20FPS-00F2FE?style=flat&logo=webgl" alt="WebGL">
+  <img src="https://img.shields.io/badge/Vite-6.x-646CFF?style=flat&logo=vite" alt="Vite">
+  <img src="https://img.shields.io/badge/Licencia-JayzirTech%20%C2%A9%202026-F59E0B?style=flat" alt="Licencia">
+</p>
+
+<p align="center">
+  <img src="public/branding/og-cover.jpg" alt="Optix™ by Visiometric Labs • JayzirTech" width="100%" style="border-radius: 14px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);" />
+</p>
 
 ---
 
-## 📸 Vista Rápida
+## 🎯 Descripción General
 
-| Escena Panorámica 4K | Mapa de Profundidad Calibrado |
-|---|---|
-| `skyline-workstation-4k.jpg` (3840 × 2160) | `skyline-workstation-depth.png` (3840 × 2160) |
-| Escena de escritorio con skyline urbano, laptop, libreta, tablet, taza de café y ventanales | Grayscale de 8 bits: cielo ~240, skyline ~232, laptop ~187, teclado ~80, escritorio ~58 |
+**Optix™** es una plataforma clínica de simulación óptica en primera persona (POV) renderizada en tiempo real mediante shaders WebGL a 60 FPS, diseñada específicamente para ópticas, consultorios optométricos y mostradores de atención al paciente présbita.
+
+A diferencia de los métodos comerciales tradicionales basados en diagramas estáticos o folletos impresos, **Optix™ permite al paciente experimentar directamente a través de una montura oftálmica realista** el comportamiento físico, las distancias focales y las limitaciones ópticas de cada diseño de lente: **Monofocales** (Lejos / Cerca), **Bifocales Flat-Top 28** (con salto de imagen y punto ciego intermedio) y **Lentes Progresivos continuos de 4 gamas** (evidenciando el Teorema de Minkwitz y el ensanchamiento ergonómico del corredor útil).
+
+---
+
+## 👓 El Ecosistema Visiometric Labs (Las 4 Aplicaciones)
+
+Optix™ forma parte de la suite clínica especializada desarrollada por **JayzirTech**:
+
+| Simulador | Nombre Clave | Enfoque Principal | Tecnología Clave |
+| :--- | :--- | :--- | :--- |
+| **Refracción y Anatomía** | `Ocularis` | Diagnóstico de miopía, hipermetropía, astigmatismo y presbicia | Canvas 2D Photonic Ray Tracing (60 FPS) |
+| **Campos Focales y Diseños** | `Optix` | Monofocales, Bifocales Flat-Top y Progresivos en 4 gamas | WebGL 2D Shaders + Mapa de Profundidad 3 planos |
+| **Filtros y Tratamientos** | `Chromatis` | Antirreflejo Verde, Crizal 5 en 1, Blue Cut, DriveSafe, Polarizado | Dual-Pass Canvas POV + Escenas 2K Calibradas |
+| **Lentes Fotosensibles** | `Luminix` | Transitions® Signature Gen S, XTRActive y Style Mirrors | Three.js WebGL + Avatar 3D (Ready Player Me) + POV |
 
 ---
 
@@ -33,34 +61,34 @@ En la consulta optométrica y en el mostrador de ventas de la óptica, la elecci
 ## 👓 Diseños Oftálmicos Implementados
 
 ### 1. Lente Monofocal (Potencia Dióptrica Homogénea)
-- Potencia constante en toda la superficie del cristal.
-- **Modo Lejos (>3 m):** Fondo nítido, laptop y celular borrosos.
-- **Modo Cerca (~35 cm):** Celular nítido, todo lo demás desenfocado.
+- Potencia constante en toda la superficie del cristal, libre de aberraciones cilíndricas marginales.
+- **Modo Lejos (>3 m):** Fondo de la oficina y skyline nítidos; laptop y celular profundamente desenfocados.
+- **Modo Cerca (~35 cm):** Lectura de celular y libreta nítidos; fondo de oficina desenfocado para ilustrar el mareo al caminar con gafas de lectura.
 
 ### 2. Lente Bifocal Flat-Top 28
-- Dos campos focales separados por una línea recta horizontal.
-- **Zona superior:** Enfoque a infinito.
-- **Pastilla inferior (D-Shape 28 mm):** Enfoque a ~35 cm.
-- Demuestra el **salto de imagen** (*Image Jump*) por discontinuidad prismática.
-- Demuestra el **punto ciego intermedio** (~70 cm): la laptop queda borrosa en ambas zonas.
+- Dos campos focales separados por una línea recta horizontal con medialuna inferior de 28 mm (D-Shape anatómica).
+- **Zona superior:** Enfoque a infinito (fondo y skyline nítidos).
+- **Pastilla inferior (D-Shape 28 mm):** Enfoque próximo (~35 cm).
+- **El Salto de Imagen (*Image Jump*):** Desplazamiento prismático vertical instantáneo al cruzar el borde superior de la pastilla debido a la discontinuidad de centro óptico.
+- **El Punto Ciego Intermedio:** La zona del computador y el teclado (~70 cm) queda borrosa tanto arriba como abajo, evidenciando por qué el bifocal es inadecuado para trabajar en pantallas digitales.
 
 ### 3. Lente Progresivo / Multifocal (4 Gamas)
-- Gradación dióptrica continua y suave de arriba hacia abajo.
-- **Selector de 4 gamas** con corredor visual de distinto ancho:
+- Gradación dióptrica suave, continua y vertical (sin líneas divisorias ni saltos prismáticos).
+- **Física del Teorema de Minkwitz:** Toda adición dióptrica vertical genera inevitablemente astigmatismo marginal a los lados del pasillo.
+- **Selector de 4 gamas** con ensanchamiento progresivo del corredor útil:
 
-| Gama | Corredor Útil | Aberraciones Laterales |
-|---|---|---|
-| Básica (Tradicional) | ~30% | Notorias y tempranas |
-| Media (Digital Convencional) | ~45% | Moderadas y suavizadas |
-| Media Alta (Free-Form) | ~65% | Reducidas y ergonómicas |
-| Alta (Personalizado Premium) | ~85% | Mínimas en bordes extremos |
+| Gama | Corredor Útil | Aberraciones Laterales | Sensación Clínica |
+|---|---|---|---|
+| **Básica (Tradicional)** | ~30% | Notorias y tempranas | Exige giros marcados de cuello para enfocar pantallas |
+| **Media (Digital Convencional)** | ~45% | Moderadas y suavizadas | Adaptación balanceada para uso en oficina |
+| **Media Alta (Free-Form)** | ~65% | Reducidas y ergonómicas | Corredor amplio, transiciones suaves y menor balanceo |
+| **Alta (Personalizado Premium)** | ~85% | Mínimas en bordes extremos | Máxima libertad de movimiento ocular natural |
 
 ---
 
-## ⚡ Arquitectura Técnica
+## ⚡ Arquitectura Técnica y Shader WebGL
 
-### Motor de Renderizado WebGL
-A diferencia de simuladores basados en fotos estáticas, **Optix™ usa una única imagen maestra nítida y calcula el desenfoque en tiempo real** mediante un fragment shader GLSL.
+A diferencia de simuladores basados en fotos estáticas alternadas, **Optix™ usa una única imagen maestra nítida y calcula el desenfoque en tiempo real** mediante un fragment shader GLSL ejecutado en la GPU a 60 FPS.
 
 ```
 ┌─────────────────────────────────────────────────────────┐
@@ -92,12 +120,12 @@ Donde:
 - $F_{\text{lens}}$ = distancia focal objetivo del lente en ese punto de la montura
 - $\text{Aberración}_{\text{lateral}}$ = astigmatismo marginal fuera del corredor (solo progresivos, según el Teorema de Minkwitz)
 
-### Escena Maestra y Mapa de Profundidad
+### Escena Maestra y Mapa de Profundidad 4K
 
 | Asset | Resolución | Formato | Descripción |
 |---|---|---|---|
-| `skyline-workstation-4k.jpg` | 3840 × 2160 | JPEG 98% | Panorama AI-expandido de escritorio con skyline urbano |
-| `skyline-workstation-depth.png` | 3840 × 2160 | PNG 8-bit grayscale | Mapa de profundidad calibrado por zona |
+| `skyline-workstation-4k.jpg` | 3840 × 2160 | JPEG 98% | Panorama AI-expandido de escritorio ejecutivo con skyline urbano sin bordes espejados |
+| `skyline-workstation-depth.png` | 3840 × 2160 | PNG 8-bit grayscale | Mapa de profundidad calibrado por zona fotométrica |
 
 **Rangos de profundidad del mapa:**
 
@@ -109,6 +137,19 @@ Donde:
 | Teclado | ~80 | 0.31 |
 | Escritorio (borde inferior) | ~58 | 0.23 |
 | Objetos cercanos (libreta, tablet, taza) | ~40-55 | 0.16-0.22 |
+
+---
+
+## ⌨️ Controles y Navegación de Mirada (POV)
+
+| Control / Interacción | Acción Realizada |
+| :--- | :--- |
+| **Arrastre (Táctil / Ratón)** | Navegación de la mirada POV con inercia física, fricción y límites fisiológicos de cuello (Yaw ±0.88, Pitch +1.05 / -1.15). |
+| **Doble Toque / Botón Centrar** | Recentrado inmediato de la mirada al punto neutro frontal. |
+| **Selector Inferior** | Cambio de diseño oftálmico (Monofocal, Bifocal, Progresivo) y gamas de corredor. |
+| **Botón Mapa Óptico** | Activa el modo Rayos X para visualizar el corredor de Minkwitz o la pastilla Flat-Top. |
+| **Botón Pantalla Completa** | Alternar modo inmersivo a pantalla completa. |
+| **Clic en Logo Optix™** | Regresar a la portada de bienvenida (preservando pantalla completa en kiosco). |
 
 ---
 
@@ -128,7 +169,7 @@ focal_lengths-simulator/
 │   │   ├── favicon.svg                # Favicon vectorial SVG (Gafas POV Split)
 │   │   ├── favicon-opt1.png           # Favicon PNG 32×32
 │   │   ├── apple-touch-icon.png       # Apple Touch Icon 180×180
-│   │   └── og-cover.jpg              # Open Graph / WhatsApp / LinkedIn 1200×630
+│   │   └── og-cover.jpg              # Open Graph 3D / WhatsApp / LinkedIn 1200×630
 │   └── scenes/
 │       ├── skyline-workstation-4k.jpg  # Escena maestra 4K panorámica (AI-expandida)
 │       ├── skyline-workstation-depth.png # Mapa de profundidad calibrado 4K
@@ -136,7 +177,8 @@ focal_lengths-simulator/
 │       └── office-depth.png            # Mapa de profundidad original (legado)
 ├── scripts/
 │   ├── generate-depth-map.cjs         # Generador de mapa de profundidad (Node + Sharp)
-│   └── generate-branding.cjs          # Generador de favicon y OG cover (Node + Sharp)
+│   ├── generate-branding.cjs          # Generador de favicon vectorial
+│   └── generate-og-cover.py           # Pipeline generador de og-cover 1200×630
 ├── src/
 │   ├── main.js                         # Orquestador maestro de la aplicación
 │   ├── components/
@@ -205,13 +247,6 @@ Genera el bundle optimizado en `dist/` con base path `/focal_lengths-simulator/`
 npm run preview
 ```
 
-### Scripts Auxiliares
-
-| Comando | Descripción |
-|---|---|
-| `npm run generate:depth` | Regenera `office-depth.png` desde el pipeline SVG/Sharp |
-| `npm run generate:branding` | Regenera favicon, apple-touch-icon y og-cover.jpg |
-
 ---
 
 ## 🌐 Despliegue (CI/CD)
@@ -233,7 +268,7 @@ dev ──────────────────► main (merge) ─�
 
 ---
 
-## 🎛️ Flujo de la Aplicación
+## 🎛️ Flujo de la Aplicación y Modo Kiosco
 
 ```
 Preloader Circular ──► Portada de Bienvenida ──► Simulador POV (WebGL + HUD)
@@ -249,9 +284,9 @@ Preloader Circular ──► Portada de Bienvenida ──► Simulador POV (WebG
 ```
 
 ### Modo Mostrador / Kiosk
-- Tras **5 minutos** de inactividad, la app regresa automáticamente a la portada.
-- Para testing rápido, añade `?timeout=2000` a la URL (valor en milisegundos).
-- Se reinicia con cualquier interacción: `pointerdown`, `pointermove`, `touchstart`, `wheel`, `keydown`.
+- Tras **5 minutos** de inactividad, la app regresa automáticamente a la portada de bienvenida restableciendo la cámara al centro.
+- **Preservación de Pantalla Completa:** Mantiene la pantalla completa activa para no interrumpir el modo mostrador.
+- **Parámetro de Testing Inmediato:** Añade `?timeout=2000` a la URL para validar el temporizador en 2 segundos.
 
 ---
 
@@ -259,12 +294,12 @@ Preloader Circular ──► Portada de Bienvenida ──► Simulador POV (WebG
 
 | Elemento | Especificación |
 |---|---|
-| **Nombre de marca** | Optix™ |
+| **Nombre de marca** | Optix™ by Visiometric Labs |
 | **Favicon** | Gafas POV Split con doble foco (SVG vectorial) |
 | **Tipografías** | Plus Jakarta Sans (UI) + JetBrains Mono (datos técnicos) |
 | **Paleta** | Fondo abisal `#070F1E`, cian fotónico `#00F2FE`, azul clínico `#38BDF8` |
 | **Iconografía** | 100% SVG vectorial — cero emojis en la interfaz |
-| **Open Graph** | Tarjeta 1200 × 630 px para WhatsApp, Telegram y LinkedIn |
+| **Open Graph** | Tarjeta 3D cinemática 1200 × 630 px con busting de caché `?v=2` |
 
 ---
 
@@ -286,7 +321,7 @@ Preloader Circular ──► Portada de Bienvenida ──► Simulador POV (WebG
 | DPR limitado a 2.0 para rendimiento térmico | ✅ |
 | Tolerancia a pérdida de contexto WebGL | ✅ |
 | PWA manifest con `display: fullscreen` | ✅ |
-| Metadatos OG completos para redes sociales | ✅ |
+| Metadatos OG completos para redes sociales con caché v2 | ✅ |
 | CI/CD automático en GitHub Pages | ✅ |
 
 ---
@@ -295,6 +330,8 @@ Preloader Circular ──► Portada de Bienvenida ──► Simulador POV (WebG
 
 | Commit | Descripción |
 |---|---|
+| `d5b6e94` | Actualización de og-cover a render 3D de alta definición y caché v2 |
+| `4659f64` | Documentación completa bilingüe (README, README_EN, AI_CONTEXT) |
 | `98e466b` | Mapa de profundidad alineado con la escena real 4K (v6) |
 | `5b1df62` | Panorama AI-expandida sin espejeado lateral + pitch extendido |
 | `6ddad92` | Vista completa del escritorio + mapa de profundidad de precisión |
@@ -310,13 +347,10 @@ Preloader Circular ──► Portada de Bienvenida ──► Simulador POV (WebG
 
 ---
 
-## 🏢 Autoría y Licencia
+## 🏢 Autoría y Propiedad Intelectual
 
 - **Organización:** Visiometric Labs
-- **Autor:** JayzirTech
-- **Licencia:** Privada / Todos los derechos reservados
-- **Año:** 2026
-
----
-
-*Documento generado el 27 de noviembre de 2026. Para la especificación técnica completa del diseño óptico y la arquitectura del shader, consultar [CONCEPT.md](./CONCEPT.md).*
+- **Empresa Matriz / Titular de Derechos:** JayzirTech
+- **Portafolio:** [JayzirTech Portfolio](https://jayzirtech.github.io/portfolio_JayzirTech/)
+- **LinkedIn:** [Jayzir Martínez](https://linkedin.com/in/jayzir-martinez)
+- **Licencia:** Privada / Todos los derechos reservados © 2026
